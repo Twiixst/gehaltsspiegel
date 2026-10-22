@@ -207,6 +207,14 @@ img{max-width:100%}
 .theme-btn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .theme-btn .i-moon{fill:currentColor;stroke:none}
 .theme-btn[data-to="light"] .i-moon,.theme-btn[data-to="dark"] .i-sun{display:none}
+.tarif-tbl td{vertical-align:middle}
+.tarif-tbl .grp{font-family:var(--f-display);font-weight:700;font-size:17px;white-space:nowrap}
+.tarif-tbl .pos{max-width:360px}
+.tarif-tbl .pos small{display:block;color:var(--muted);font-size:12px}
+.tarif-tbl tr.has td{background:var(--accent-soft)}
+.tarif-tbl .who{display:flex;flex-wrap:wrap;gap:4px}
+.tchip{font-size:12px;border:1px solid var(--line);border-radius:99px;padding:1px 8px;background:var(--surface);white-space:nowrap}
+.tarif-note{color:var(--muted);font-size:13px;margin:0;max-width:80ch}
 .zsec{display:grid;gap:8px}
 .zsec h3{font-size:17px;display:flex;align-items:center;gap:8px}
 .zrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;border:1px solid var(--line);border-radius:6px;padding:8px 10px}
@@ -346,6 +354,13 @@ textarea.mono{font-family:var(--f-mono);font-size:13px;min-height:120px}
   </div>
 
   <section class="card">
+    <div class="card-h"><h2>Tarif Bau: Gehaltsgruppen</h2><span class="hint">Angestellte im Bauhauptgewerbe, gültig ab 01.04.2026</span></div>
+    <p class="tarif-note">Werkstudenten fallen nicht automatisch unter den Tarif, viele Baufirmen orientieren sich aber daran und zahlen den Stundenlohn der Gruppe anteilig. Die Spalte „Bei uns“ zeigt, wer in welcher Gruppe eingetragen ist.</p>
+    <div class="tbl-wrap"><table class="tarif-tbl" id="tbl-tarif"></table></div>
+    <p class="tarif-note">Quelle: Tarifvertrag Bauhauptgewerbe, Gehälter ab 01.04.2026 (bundeseinheitlich West/Ost), 40-Stunden-Woche, ohne 13. Monatseinkommen. Beschreibungen gekürzt nach dem Rahmentarifvertrag für Angestellte und Poliere. Maßgeblich ist immer die Eingruppierung im eigenen Vertrag.</p>
+  </section>
+
+  <section class="card">
     <div class="card-h"><h2>Alle Einträge</h2><span style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span class="hint" id="all-count">Bearbeiten nur bei eigenen Einträgen</span><button class="btn btn-ghost" type="button" id="btn-export" hidden>Als CSV exportieren</button></span></div>
     <div class="tbl-tools">
       <input type="search" id="q" placeholder="Suchen: Name, Arbeitgeber, Bereich, Stadt, Notiz" aria-label="Einträge durchsuchen">
@@ -370,6 +385,7 @@ textarea.mono{font-family:var(--f-mono);font-size:13px;min-height:120px}
         <div class="field"><label for="f-firma">Arbeitgeber</label><input id="f-firma" maxlength="60" placeholder="optional"></div>
         <div class="field"><label for="f-bereich">Bereich / Tätigkeit</label><input id="f-bereich" maxlength="60" list="dl-bereich" placeholder="aus Liste wählen oder eintippen"><datalist id="dl-bereich"></datalist></div>
         <div class="field"><label for="f-stadt">Stadt</label><input id="f-stadt" maxlength="40"></div>
+        <div class="field"><label for="f-tarif">Tarifgruppe (falls bekannt)</label><select id="f-tarif"><option value="">keine / weiß nicht</option><option>A I</option><option>A II</option><option>A III</option><option>A IV</option><option>A V</option><option>A VI</option><option>A VII</option><option>A VIII</option><option>A IX</option><option>A X</option><option value="anderer">anderer Tarif</option></select><small>steht oft im Vertrag, z. B. „Gehaltsgruppe A III“</small></div>
         <div class="field"><label for="f-seit">Gültig seit *</label><input id="f-seit" type="month" required><small id="h-seit" hidden>Die vorherige Phase endet dann automatisch im Monat davor.</small></div>
         <div class="field"><label for="f-bis">Befristet bis</label><input id="f-bis" type="month"><small>leer lassen, wenn unbefristet</small></div>
         <div class="field full"><label>Höchster Abschluss zu dem Zeitpunkt</label>
@@ -531,7 +547,7 @@ function render(){
   let best=null;L.filter(l=>!l.neben&&l.active).forEach(l=>{const i=l.items.indexOf(l.cur);if(i<1)return;const d=l.cur.stundenlohn/l.items[i-1].stundenlohn-1;if(!best||d>best.d)best={d,l}});
   $("k-up").textContent=best?(best.d>=0?"+":"")+pct(best.d):"–";
   $("k-up-s").textContent=best?`${best.l.name}, ab ${mLong(best.l.cur.seit)}`:"braucht mind. 2 Einträge";
-  const NN=showNeben?N:[];renderJFilter(H.concat(NN));renderFilter(H.concat(NN));renderRank(H,N);renderTrend(L,persons);renderUp(L.filter(l=>showNeben||!l.neben));renderBereich(H.concat(NN));renderMilo(H);renderScatter(H);renderAll(list,L);
+  const NN=showNeben?N:[];renderJFilter(H.concat(NN));renderFilter(H.concat(NN));renderRank(H,N);renderTrend(L,persons);renderUp(L.filter(l=>showNeben||!l.neben));renderBereich(H.concat(NN));renderMilo(H);renderScatter(H);renderTarif(L);renderAll(list,L);
   $("btn-export").hidden=!(dl&&!showDemo());
   fillDatalist(list);
 }
@@ -669,6 +685,27 @@ function renderScatter(H){
   el.innerHTML=`<svg viewBox="0 0 ${W} ${Hh}" role="img" aria-label="Stundenlohn gegen Wochenstunden">${g}</svg>`;
 }
 
+// Tarif Bauhauptgewerbe, Angestellte, Monatsgehalt bei 40 h, gültig ab 01.04.2026 (bundeseinheitlich)
+const TARIF=[
+ ["A I",2983,"Einfache Tätigkeiten mit kurzer Einarbeitung","keine Ausbildung nötig, z. B. Aushilfe"],
+ ["A II",3400,"Abgegrenzte Aufgaben nach Anweisung","abgeschlossene Ausbildung, z. B. einfache Pläne"],
+ ["A III",3862,"Abgegrenzte Aufgaben nach allgemeiner Anweisung","Ausbildung + Berufserfahrung, z. B. Schal- und Bewehrungspläne"],
+ ["A IV",4339,"Erweiterte Aufgaben, teils selbstständig","Technikerschule oder Berufsakademie, z. B. Pläne anfertigen"],
+ ["A V",4830,"Schwierige Aufgaben, teils eigenverantwortlich","Bachelor (Einstieg) oder Techniker + Erfahrung, z. B. Konstruktionen, Massen, einfache Kalkulation"],
+ ["A VI",5340,"Schwierige Aufgaben, weitgehend selbstständig","Master FH, Diplom FH oder Bachelor + Erfahrung, z. B. Bauüberwachung unter einem Bauleiter, einfache Statik"],
+ ["A VII",5878,"Schwierigere Aufgaben, eigenverantwortlich","Master/Diplom Uni oder Bachelor + vertiefte Erfahrung, Poliere, z. B. Abschnittsbauleitung, Statik mittlerer Schwierigkeit"],
+ ["A VIII",6432,"Besonders schwierige Aufgaben, eigenverantwortlich","Master/Diplom + Erfahrung, z. B. selbstständige Bauleitung, Verhandeln mit Bauherren und Behörden"],
+ ["A IX",7145,"Umfassende Aufgaben, eigenverantwortlich","Studium + vertiefte Berufserfahrung, z. B. Leitung komplizierter Bauausführungen"],
+ ["A X",7961,"Umfassende Aufgaben mit besonderer Verantwortung","Studium + vertiefte Erfahrung, eigene Weisungsbefugnis (Führungsposition)"]
+];
+function renderTarif(L){
+  const t=$("tbl-tarif"),act=L.filter(l=>l.active&&(showNeben||!l.neben)),byG=new Map();
+  act.forEach(l=>{const g=l.cur.tarif;if(!g)return;if(!byG.has(g))byG.set(g,[]);byG.get(g).push(l)});
+  t.innerHTML=`<thead><tr><th>Gruppe</th><th>Typische Position</th><th class="r">Monat (40 h)</th><th class="r">€/h</th><th>Bei uns</th></tr></thead><tbody>`+
+  TARIF.map(([g,m,a,b])=>{const ls=byG.get(g)||[],h=m/(40*WPM);
+    return `<tr class="${ls.length?"has":""}"><td class="grp">${g}</td><td class="pos">${a}<small>${b}</small></td><td class="r num">${eur(m,0)}</td><td class="r num"><b>${eur(h)}</b></td><td><div class="who">${ls.map(l=>`<span class="tchip" title="${esc(eur(l.cur.stundenlohn))} pro Stunde, ${l.cur.stunden} h/Woche"><span class="dot" style="background:${l.color};margin-right:4px"></span>${esc(l.name)}</span>`).join("")}</div></td></tr>`}).join("")+`</tbody>`;
+}
+
 function renderAll(list,L){
   const t=$("tbl-all");
   if(!list.length){t.innerHTML=`<tr><td><div class="empty">Hier erscheinen alle Einträge.<button class="btn btn-ghost" type="button" data-add>Ersten Eintrag hinzufügen</button></div></td></tr>`;return}
@@ -677,7 +714,7 @@ function renderAll(list,L){
   const nextOf=new Map();L.forEach(l=>l.items.forEach((e,j)=>{if(l.items[j+1])nextOf.set(e.id,mIdx(l.items[j+1].seit))}));
   const idxTxt=i=>String(i%12+1).padStart(2,"0")+"."+Math.floor(i/12);
   const qq=keyOf($("q").value),sortBy=$("sort").value,onlyCur=$("only-cur").checked;
-  let rows=list.filter(e=>!qq||[e._name,e.firma,e.bereich,e.stadt,e.notiz,e.abschluss,jobLabel(e)].some(v=>keyOf(v).includes(qq)));
+  let rows=list.filter(e=>!qq||[e._name,e.firma,e.bereich,e.stadt,e.notiz,e.abschluss,e.tarif,jobLabel(e)].some(v=>keyOf(v).includes(qq)));
   if(onlyCur)rows=rows.filter(e=>{const ln=curOf.get(e.id);return ln&&ln.active});
   const by={neu:(a,b)=>(mIdx(b.seit)-mIdx(a.seit))||(b.created-a.created),alt:(a,b)=>(mIdx(a.seit)-mIdx(b.seit))||(a.created-b.created),
     name:(a,b)=>a._name.localeCompare(b._name,"de")||(mIdx(b.seit)-mIdx(a.seit)),"lohn-desc":(a,b)=>b.stundenlohn-a.stundenlohn,"lohn-asc":(a,b)=>a.stundenlohn-b.stundenlohn};
@@ -710,8 +747,8 @@ function csv(){
   const d1=s=>{if(!s)return"";const[y,m]=s.split("-");return`01.${m}.${y}`};
   const dEnd=s=>{if(!s)return"";const[y,m]=s.split("-").map(Number);return`${String(new Date(y,m,0).getDate()).padStart(2,"0")}.${String(m).padStart(2,"0")}.${y}`};
   const art={stunde:"Stundenlohn",monat:"Monatsgehalt",vollzeit:"Monatsgehalt bei Vollzeit"};
-  const head=["Name","Gültig seit","Gehaltsart","Betrag (€)","Std./Woche","Vollzeit-Std.","Stundenlohn (€)","Monatsbrutto (€)","Höchster Abschluss","Befristet bis","Arbeitgeber","Bereich","Stadt","Notiz / Benefits","Art des Jobs","Verlängert"];
-  prep(entries);const rows=[...entries].sort((a,b)=>a._name.localeCompare(b._name,"de")||(mIdx(a.seit)-mIdx(b.seit))).map(e=>[e._name,d1(e.seit),art[e.modus]||"",n(e.betrag,2),n(e.stunden,1),e.modus==="vollzeit"?n(e.vollzeit,1):"",n(e.stundenlohn,2),n(e.monat,2),e.abschluss||"",dEnd(e.bis),e.firma||"",e.bereich||"",e.stadt||"",e.notiz||"",jobLabel(e),e.verlaengert?String(e.verlaengert)+"×":""]);
+  const head=["Name","Gültig seit","Gehaltsart","Betrag (€)","Std./Woche","Vollzeit-Std.","Stundenlohn (€)","Monatsbrutto (€)","Höchster Abschluss","Befristet bis","Arbeitgeber","Bereich","Stadt","Notiz / Benefits","Art des Jobs","Verlängert","Tarifgruppe"];
+  prep(entries);const rows=[...entries].sort((a,b)=>a._name.localeCompare(b._name,"de")||(mIdx(a.seit)-mIdx(b.seit))).map(e=>[e._name,d1(e.seit),art[e.modus]||"",n(e.betrag,2),n(e.stunden,1),e.modus==="vollzeit"?n(e.vollzeit,1):"",n(e.stundenlohn,2),n(e.monat,2),e.abschluss||"",dEnd(e.bis),e.firma||"",e.bereich||"",e.stadt||"",e.notiz||"",jobLabel(e),e.verlaengert?String(e.verlaengert)+"×":"",e.tarif||""]);
   return "﻿"+[head].concat(rows).map(r=>r.map(q).join(";")).join("\r\n");
 }
 $("btn-export").addEventListener("click",async()=>{
@@ -750,7 +787,7 @@ function openForm(e,asPhase){
   editing=e&&!asPhase?e:null;
   const src=e||null;
   $("dlg-title").textContent=editing?"Eintrag bearbeiten":asPhase?"Neues Gehalt eintragen":"Eintrag hinzufügen";$("h-seit").hidden=!asPhase;
-  $("f-name").value=src?(src.name||""):lastName();$("f-firma").value=src?.firma||"";$("f-bereich").value=src?.bereich||"";$("f-stadt").value=src?.stadt||"";
+  $("f-name").value=src?(src.name||""):lastName();$("f-firma").value=src?.firma||"";$("f-bereich").value=src?.bereich||"";$("f-stadt").value=src?.stadt||"";$("f-tarif").value=src?.tarif||"";
   const d=new Date();$("f-seit").value=editing?editing.seit:`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`;
   $("f-bis").value=src?.bis||"";
   abschluss=src?.abschluss||"";setSeg("seg-abschluss",abschluss);
@@ -788,7 +825,7 @@ $("form").addEventListener("submit",async ev=>{
   if(c.h<5||c.h>80)return fail(`Das ergibt ${eur(c.h)} pro Stunde. Stimmt die Gehaltsart oben?`);
   if(bis&&bis<seit)return fail("„Befristet bis“ liegt vor „Gültig seit“.");
   if(!db)return fail("Speichern ist gerade nicht möglich. Bitte die Seite neu laden.");
-  const body={name,firma,anonym:anon,bereich:$("f-bereich").value.trim(),stadt:$("f-stadt").value.trim(),abschluss,seit,bis,jobart:art,
+  const body={name,firma,anonym:anon,bereich:$("f-bereich").value.trim(),stadt:$("f-stadt").value.trim(),tarif:$("f-tarif").value,abschluss,seit,bis,jobart:art,
     modus:mode,betrag:v.betrag,stunden:v.std,vollzeit:mode==="vollzeit"?v.vz:40,stundenlohn:Math.round(c.h*100)/100,monat:Math.round(c.m*100)/100,
     notiz:$("f-notiz").value.trim(),owner:editing?editing.owner:myId,created:editing?editing.created:Date.now()};
   $("btn-save").disabled=true;
