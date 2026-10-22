@@ -248,8 +248,8 @@ img{max-width:100%}
 .faq details:last-child{border-bottom:0}
 .faq summary{cursor:pointer;font-weight:600;font-size:14px}
 .faq p{margin:6px 0 0;font-size:14px;color:var(--muted)}
-.gifbox{height:220px;border:1.5px solid var(--ink);border-radius:var(--r);background:var(--bg);display:grid;place-items:center;overflow:hidden}
-.gifbox img{max-width:100%;max-height:100%;object-fit:contain;transition:opacity .3s}
+.gifbox{border:1.5px solid var(--ink);border-radius:var(--r);background:var(--bg);overflow:hidden;min-height:120px}
+.gifbox img{display:block;width:100%;height:auto;max-height:min(420px,60vh);object-fit:contain;transition:opacity .3s}
 .zsec{display:grid;gap:8px}
 .zsec h3{font-size:17px;display:flex;align-items:center;gap:8px}
 .zrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;border:1px solid var(--line);border-radius:6px;padding:8px 10px}
@@ -1055,7 +1055,7 @@ $("u-settings").addEventListener("click", () => show("s-overlay", true));
 $("s-overlay").addEventListener("click", e => { if (e.target === $("s-overlay") || e.target.closest("[data-s-close]")) show("s-overlay", false); });
 document.addEventListener("keydown", e => { if (e.key === "Escape") show("s-overlay", false); });
 
-/* Warte-GIFs: zufällige Reihenfolge, alle 6 Sekunden ein neues */
+/* Warte-GIFs: zufällige Reihenfolge, alle 12 Sekunden ein neues */
 const GIFS = ["https://i.giphy.com/E8gZWKFe0bEDLAnBiQ.webp", "https://media.tenor.com/t4Onu5MZr8EAAAAm/pilup-criplup.webp",
   "https://i.giphy.com/ardUtH5FlenO8.webp", "https://i.giphy.com/wkPBxvetT2UUqSukUE.webp", "https://i.giphy.com/V4OJOJx9nKOaI.webp",
   "https://i.giphy.com/cXblnKXr2BQOaYnTni.webp", "https://i.giphy.com/t8xgPfC5oNIRMrNooe.webp"];
@@ -1067,7 +1067,7 @@ function nextGif(){
   pre.onerror = () => setTimeout(nextGif, 200);
   pre.src = src;
 }
-function gifs(on){ clearInterval(gifTimer); gifTimer = null; if (on) { nextGif(); gifTimer = setInterval(nextGif, 6000); } }
+function gifs(on){ clearInterval(gifTimer); gifTimer = null; if (on) { nextGif(); gifTimer = setInterval(nextGif, 12000); } }
 
 /* Zugang anfragen (wer noch nicht freigeschaltet ist) */
 let reqWatch = null;
