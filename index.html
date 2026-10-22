@@ -163,7 +163,19 @@ td.r,th.r{text-align:right}
 .dlg-f{padding:12px 18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;position:sticky;bottom:0;background:var(--surface)}
 .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media (max-width:520px){.fgrid{grid-template-columns:1fr}}
-.field{display:grid;gap:4px;min-width:0}
+.field{display:grid;gap:4px;min-width:0;align-content:start}
+.range2{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:center}
+.range2 span{color:var(--muted);font-size:14px}
+.lauf{display:grid;gap:8px}
+.lrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:8px}
+.lrow:last-child{border-bottom:0;padding-bottom:0}
+.lrow .nm{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lrow .nm small{display:block;font-weight:400;font-size:12px;color:var(--muted)}
+.lchip{font-size:12px;font-weight:700;border-radius:99px;padding:2px 9px;white-space:nowrap;background:var(--bg);color:var(--muted)}
+.lchip.soon{background:var(--accent-soft);color:var(--accent)}
+.lchip.ok{background:var(--good-soft);color:var(--good)}
+.tarif-tbl .merk{font-size:13px;max-width:380px}
+.tarif-tbl .merk small{display:block;color:var(--muted);font-size:12px}
 .field.full{grid-column:1/-1}
 .field label{font-weight:600;font-size:13px}
 .field small{color:var(--muted);font-size:12px}
@@ -357,8 +369,8 @@ textarea.mono{font-family:var(--f-mono);font-size:13px;min-height:120px}
           <div class="rank" id="by-bereich"></div>
         </section>
         <section class="card">
-          <div class="card-h"><h2>Mehr Stunden = besserer Lohn?</h2><span class="hint">Hauptjobs</span></div>
-          <div class="chart" id="scatter"></div>
+          <div class="card-h"><h2>Vertragslaufzeiten</h2><span class="hint">aktuelle Stellen, nach Enddatum</span></div>
+          <div class="lauf" id="lauf"></div>
         </section>
       </div>
     </div>
@@ -382,7 +394,7 @@ textarea.mono{font-family:var(--f-mono);font-size:13px;min-height:120px}
       <div class="card-h"><h2>Tarif Bau: Gehaltsgruppen</h2><span class="hint">Angestellte im Bauhauptgewerbe, gültig ab 01.04.2026</span></div>
       <p class="tarif-note">Werkstudenten fallen nicht automatisch unter den Tarif, viele Baufirmen orientieren sich aber daran und zahlen den Stundenlohn der Gruppe anteilig. „Bei uns“ zeigt, wer in welcher Gruppe eingetragen ist.</p>
       <div class="tbl-wrap"><table class="tarif-tbl" id="tbl-tarif"></table></div>
-      <p class="tarif-note">Quelle: <a href="https://tarifvertrag-online.de/entgelttabelle/bau/bauhauptgewerbe" target="_blank" rel="noopener">tarifvertrag-online.de, Gehaltstabelle Bauhauptgewerbe</a>. Gültig ab 01.04.2026, bundeseinheitlich, 40-Stunden-Woche, ohne 13. Monatseinkommen. Maßgeblich ist immer die Eingruppierung im eigenen Vertrag.</p>
+      <p class="tarif-note">Quelle: <a href="https://tarifvertrag-online.de/entgelttabelle/bau/bauhauptgewerbe" target="_blank" rel="noopener">tarifvertrag-online.de, Gehaltstabelle Bauhauptgewerbe</a>. Gültig ab 01.04.2026, bundeseinheitlich, 40-Stunden-Woche, ohne 13. Monatseinkommen. Tätigkeitsmerkmale gekürzt nach § 5 des <a href="https://www.sozialkasse-berlin.de/fileadmin/pdf/tarifvertraege/Baugewerbe/RTV_Angestellte-Poliere_05.11.2021.pdf" target="_blank" rel="noopener">Rahmentarifvertrags für Angestellte und Poliere des Baugewerbes</a>; statt der Qualifikation zählt auch gleichwertige Berufserfahrung. Maßgeblich ist immer die Eingruppierung im eigenen Vertrag.</p>
     </section>
       <div class="stack">
         <section class="card">
@@ -401,17 +413,18 @@ textarea.mono{font-family:var(--f-mono);font-size:13px;min-height:120px}
     <div class="dlg-h"><h2 id="dlg-title">Eintrag hinzufügen</h2><button class="btn btn-ghost" type="button" id="btn-close">Schließen</button></div>
     <div class="dlg-b">
       <div class="field"><label>Art des Jobs</label>
-        <div class="seg" id="seg-art"><button type="button" data-v="werkstudent" aria-pressed="true">Werkstudent</button><button type="button" data-v="hiwi" aria-pressed="false">HiWi / SHK</button><button type="button" data-v="praktikum" aria-pressed="false">Praktikum</button><button type="button" data-v="sonstiges" aria-pressed="false">Sonstiges</button></div>
+        <div class="seg" id="seg-art"><button type="button" data-v="werkstudent" aria-pressed="true">Werkstudent</button><button type="button" data-v="hiwi" aria-pressed="false">HiWi / SHK</button><button type="button" data-v="praktikum" aria-pressed="false">Praktikum</button><button type="button" data-v="festanstellung" aria-pressed="false">Festanstellung</button><button type="button" data-v="sonstiges" aria-pressed="false">Sonstiges</button></div>
         <small>Mehrere Jobs gleichzeitig? Die App erkennt den Hauptjob automatisch an den Wochenstunden.</small></div>
       <label class="anon-box" for="f-anon"><input type="checkbox" id="f-anon"><span><b>Anonym eintragen</b><small>Name und Arbeitgeber werden nicht gespeichert. Auf der Seite erscheinst du als „Anonym A“, „Anonym B“ usw.</small></span></label>
       <div class="fgrid">
         <div class="field"><label for="f-name">Name *</label><input id="f-name" autocomplete="off" required maxlength="40" placeholder="z. B. Max"></div>
         <div class="field"><label for="f-firma">Arbeitgeber</label><input id="f-firma" maxlength="60" placeholder="optional"></div>
-        <div class="field"><label for="f-bereich">Bereich / Tätigkeit</label><input id="f-bereich" maxlength="60" list="dl-bereich" placeholder="aus Liste wählen oder eintippen"><datalist id="dl-bereich"></datalist></div>
+        <div class="field full"><label for="f-bereich">Bereich / Tätigkeit</label><input id="f-bereich" maxlength="60" list="dl-bereich" placeholder="aus Liste wählen oder eintippen"><datalist id="dl-bereich"></datalist></div>
         <div class="field"><label for="f-stadt">Stadt</label><input id="f-stadt" maxlength="40"></div>
-        <div class="field"><label for="f-tarif">Tarifgruppe (falls bekannt)</label><select id="f-tarif"><option value="">keine / weiß nicht</option><option>A I</option><option>A II</option><option>A III</option><option>A IV</option><option>A V</option><option>A VI</option><option>A VII</option><option>A VIII</option><option>A IX</option><option>A X</option><option value="anderer">anderer Tarif</option></select><small>steht oft im Vertrag, z. B. „Gehaltsgruppe A III“</small></div>
-        <div class="field"><label for="f-seit">Gültig seit *</label><input id="f-seit" type="month" required><small id="h-seit" hidden>Die vorherige Phase endet dann automatisch im Monat davor.</small></div>
-        <div class="field"><label for="f-bis">Befristet bis</label><input id="f-bis" type="month"><small>leer lassen, wenn unbefristet</small></div>
+        <div class="field"><label for="f-tarif">Tarifgruppe (falls bekannt)</label><select id="f-tarif"><option value="">keine / weiß nicht</option><option>A I</option><option>A II</option><option>A III</option><option>A IV</option><option>A V</option><option>A VI</option><option>A VII</option><option>A VIII</option><option>A IX</option><option>A X</option><option value="anderer">anderer Tarif</option></select></div>
+        <div class="field full"><label for="f-seit">Vertragszeitraum *</label>
+          <div class="range2"><input id="f-seit" type="month" required placeholder="JJJJ-MM" aria-label="gültig seit"><span>bis</span><input id="f-bis" type="month" placeholder="JJJJ-MM" aria-label="befristet bis, leer wenn unbefristet"></div>
+          <small id="h-bis">Enddatum leer lassen, wenn unbefristet.</small><small id="h-seit" hidden>Die vorherige Phase endet dann automatisch im Monat davor.</small></div>
         <div class="field full"><label>Höchster Abschluss zu dem Zeitpunkt</label>
           <div class="seg" id="seg-abschluss"><button type="button" data-v="Abitur" aria-pressed="false">Abitur</button><button type="button" data-v="Ausbildung" aria-pressed="false">Ausbildung</button><button type="button" data-v="Bachelor" aria-pressed="false">Bachelor</button><button type="button" data-v="Master" aria-pressed="false">Master</button></div>
           <small>Also der Abschluss, den du schon hast. Wer gerade im Master ist, wählt Bachelor.</small></div>
@@ -488,7 +501,8 @@ const nowIdx=(()=>{const d=new Date();return d.getFullYear()*12+d.getMonth()})()
 const keyOf=n=>String(n||"").trim().toLowerCase().replace(/\s+/g," ");
 const median=a=>{if(!a.length)return null;const s=[...a].sort((x,y)=>x-y),h=s.length>>1;return s.length%2?s[h]:(s[h-1]+s[h])/2};
 const avg=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:null;
-const JOBS={werkstudent:"Werkstudent",hiwi:"HiWi / SHK",praktikum:"Praktikum",sonstiges:"Sonstiges"};
+const JOBS={werkstudent:"Werkstudent",hiwi:"HiWi / SHK",praktikum:"Praktikum",festanstellung:"Festanstellung",sonstiges:"Sonstiges"};
+const isStud=l=>l.job!=="festanstellung";
 const jobOf=e=>JOBS[e.jobart]?e.jobart:(e.art==="neben"?"hiwi":"werkstudent");
 const jobLabel=e=>JOBS[jobOf(e)];
 const isActive=e=>!e.bis||mIdx(e.bis)>=nowIdx;
@@ -543,7 +557,7 @@ function lines(list){
     l.active=!l.planned&&isActive(l.cur);
     const ends=l.items.map(e=>e.bis?mIdx(e.bis):nowIdx);l.endIdx=Math.max(...ends);});
   // Haupt- oder Nebenjob: im maßgeblichen Monat (heute bzw. letzter Monat der Stelle) zählt die Stelle mit den meisten Wochenstunden
-  const prio={werkstudent:0,praktikum:1,hiwi:2,sonstiges:3};
+  const prio={festanstellung:-1,werkstudent:0,praktikum:1,hiwi:2,sonstiges:3};
   arr.forEach(l=>{const at=l.active?nowIdx:Math.min(nowIdx,l.endIdx);const me=phaseAt(l,at)||l.cur;
     l.neben=arr.some(o=>{if(o===l||o.pkey!==l.pkey)return false;const p=phaseAt(o,at);if(!p)return false;
       return p.stunden>me.stunden||(p.stunden===me.stunden&&prio[o.job]<prio[l.job])});
@@ -557,21 +571,21 @@ function render(){
   const list=current();prep(list);
   $("demo-banner").hidden=!showDemo();
   const {arr:L,persons}=lines(list);
-  const H=L.filter(l=>!l.neben&&l.active), N=L.filter(l=>l.neben&&l.active);
-  const rates=H.map(l=>l.cur.stundenlohn), med=median(rates);
+  const H=L.filter(l=>!l.neben&&l.active), N=L.filter(l=>l.neben&&l.active), HS=H.filter(isStud);
+  const rates=HS.map(l=>l.cur.stundenlohn), med=median(rates), mean=avg(rates);
   $("pk-date").textContent=new Date().toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit",year:"numeric"});
   $("pk-people").textContent=persons.length;
   $("pk-entries").textContent=list.length;
   $("k-med").textContent=eur(med);
-  $("k-med-s").textContent=H.length?`aus ${H.length} aktuellen Hauptjob${H.length===1?"":"s"}`:"noch keine Daten";
+  $("k-med-s").textContent=HS.length?`Durchschnitt ${eur(mean)} · ${HS.length} Studentenjob${HS.length===1?"":"s"}`:"noch keine Daten";
   if(rates.length){$("k-span").textContent=`${eur(Math.min(...rates)).replace(" €","")}–${eur(Math.max(...rates))}`;
     $("k-span-s").textContent=`Unterschied ${eur(Math.max(...rates)-Math.min(...rates))}/h`}else{$("k-span").textContent="–";$("k-span-s").textContent=""}
-  const am=avg(H.map(l=>l.cur.monat));$("k-month").textContent=eur(am,0);$("k-month-s").textContent=am?`≈ ${eur(am*12,0)} im Jahr`:"";
+  const am=avg(HS.map(l=>l.cur.monat));$("k-month").textContent=eur(am,0);$("k-month-s").textContent=am?`≈ ${eur(am*12,0)} im Jahr`:"";
   const mn=miloAt(nowIdx);$("k-milo").textContent=med&&mn?(med>=mn?"+":"")+pct(med/mn-1):"–";$("k-milo-s").textContent=mn?`Median vs. ${eur(mn)} Mindestlohn`:"";
-  let best=null;L.filter(l=>!l.neben&&l.active).forEach(l=>{const i=l.items.indexOf(l.cur);if(i<1)return;const d=l.cur.stundenlohn/l.items[i-1].stundenlohn-1;if(!best||d>best.d)best={d,l}});
+  let best=null;HS.forEach(l=>{const i=l.items.indexOf(l.cur);if(i<1)return;const d=l.cur.stundenlohn/l.items[i-1].stundenlohn-1;if(!best||d>best.d)best={d,l}});
   $("k-up").textContent=best?(best.d>=0?"+":"")+pct(best.d):"–";
   $("k-up-s").textContent=best?`${best.l.name}, ab ${mLong(best.l.cur.seit)}`:"braucht mind. 2 Einträge";
-  const NN=showNeben?N:[];renderJFilter(H.concat(NN));renderFilter(H.concat(NN));renderRank(H,N);renderTrend(L,persons);renderUp(L.filter(l=>showNeben||!l.neben));renderBereich(H.concat(NN));renderMilo(H);renderScatter(H);renderTarif(L);renderAll(list,L);
+  const NN=showNeben?N:[];renderJFilter(H.concat(NN));renderFilter(H.concat(NN));renderRank(H,N);renderTrend(L,persons);renderUp(L.filter(l=>showNeben||!l.neben));renderBereich(HS.concat(NN));renderMilo(HS);renderLauf(L);renderTarif(L);renderAll(list,L);
   $("btn-export").hidden=!(dl&&!showDemo());
   fillDatalist(list);
 }
@@ -598,7 +612,7 @@ function renderRank(H,N){
   if(!H.length&&!N.length){el.innerHTML=`<div class="empty">Noch keine Einträge.<button class="btn btn-ghost" type="button" data-add>Ersten Eintrag hinzufügen</button></div>`;$("rank-foot").textContent="";return}
   if(!rows.length){el.innerHTML=`<div class="empty">Keine aktuellen Stellen für diesen Filter.</div>`;$("rank-foot").textContent="";return}
   rows.sort((a,b)=>b.cur.stundenlohn-a.cur.stundenlohn);
-  const hr=rows.filter(l=>!l.neben).map(l=>l.cur.stundenlohn);
+  const hr=rows.filter(l=>!l.neben&&isStud(l)).map(l=>l.cur.stundenlohn);
   const med=median(hr.length?hr:rows.map(l=>l.cur.stundenlohn));
   const max=Math.ceil(Math.max(...rows.map(l=>l.cur.stundenlohn))/2)*2, sc=v=>v/max*100;
   let pos=0;
@@ -694,29 +708,36 @@ function renderMilo(H){
   $("milo-tbl").innerHTML=`<thead><tr><th>Gilt ab</th><th class="r">Mindestlohn</th><th class="r">Erhöhung</th><th></th></tr></thead><tbody>`+rows.map(([k,v,m])=>{const prev=miloAt(k-1);
     return `<tr><td class="num">${mLong(m)}</td><td class="r num"><b>${eur(v)}</b></td><td class="r num">${prev?"+"+pct(v/prev-1):""}</td><td>${k>nowIdx?'<span class="tag plan">kommt</span>':k===MILO.filter(([x])=>x<=nowIdx).slice(-1)[0]?.[0]?'<span class="tag now">gilt jetzt</span>':""}</td></tr>`}).join("")+`</tbody>`;
 }
-function renderScatter(H){
-  const el=$("scatter");if(!H.length){el.innerHTML=`<div class="empty">Noch keine Daten.</div>`;return}
-  const W=Math.max(300,Math.min(420,el.clientWidth||420)),Hh=200,L=40,R=12,T=10,B=30;
-  const hs=H.map(l=>l.cur.stunden),vs=H.map(l=>l.cur.stundenlohn);
-  const x0=0,x1=Math.max(20,Math.ceil(Math.max(...hs)/5)*5);
-  let y0=Math.floor(Math.min(...vs)-1),y1=Math.ceil(Math.max(...vs)+1);
-  const X=v=>L+(v-x0)/(x1-x0)*(W-L-R),Y=v=>T+(1-(v-y0)/(y1-y0))*(Hh-T-B);
-  let g="";
-  for(let v=y0;v<=y1;v+=(y1-y0>8?2:1))g+=`<line x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--grid)"/><text x="${L-6}" y="${Y(v)+4}" text-anchor="end">${v} €</text>`;
-  for(let v=0;v<=x1;v+=5)g+=`<text x="${X(v)}" y="${Hh-B+16}" text-anchor="middle">${v} h</text>`;
-  g+=`<line x1="${L}" x2="${W-R}" y1="${Hh-B}" y2="${Hh-B}" stroke="var(--muted)"/>`;
-  H.forEach(l=>{g+=`<circle cx="${X(l.cur.stunden)}" cy="${Y(l.cur.stundenlohn)}" r="6" fill="${l.color}" fill-opacity=".85" stroke="var(--surface)" stroke-width="2"><title>${esc(l.name)}: ${l.cur.stunden} h · ${esc(eur(l.cur.stundenlohn))}</title></circle>`});
-  el.innerHTML=`<svg viewBox="0 0 ${W} ${Hh}" role="img" aria-label="Stundenlohn gegen Wochenstunden">${g}</svg>`;
+function renderLauf(L){
+  const el=$("lauf"),act=L.filter(l=>l.active&&(showNeben||!l.neben));
+  if(!act.length){el.innerHTML=`<div class="empty">Noch keine aktuellen Stellen.</div>`;return}
+  const endOf=l=>l.last.bis?mIdx(l.last.bis):null;
+  const rows=act.map(l=>({l,end:endOf(l)})).sort((a,b)=>(a.end??1e9)-(b.end??1e9));
+  el.innerHTML=rows.map(({l,end})=>{const left=end==null?null:end-nowIdx;
+    const chip=end==null?`<span class="lchip ok">unbefristet</span>`:`<span class="lchip ${left<=3?"soon":""}">${left<=0?"endet diesen Monat":left===1?"noch 1 Monat":`noch ${left} Monate`}</span>`;
+    return `<div class="lrow"><span class="nm"><span class="dot" style="background:${l.color}"></span>${esc(l.name)}<small>${JOBS[l.job]}${end==null?"":` · bis ${mLong(l.last.bis)}`}</small></span>${chip}</div>`}).join("");
 }
 
 // Tarif Bauhauptgewerbe, Angestellte, Monatsgehalt bei 40 h, gültig ab 01.04.2026 (bundeseinheitlich)
-const TARIF=[["A I",2983],["A II",3400],["A III",3862],["A IV",4339],["A V",4830],["A VI",5340],["A VII",5878],["A VIII",6432],["A IX",7145],["A X",7961]];
+// Monatsgehalt bei 40 h ab 01.04.2026; Merkmale gekürzt nach § 5 RTV Angestellte/Poliere Baugewerbe
+const TARIF=[
+ ["A I",2983,"Einfache Tätigkeiten mit kurzer Einarbeitung","keine Berufsausbildung erforderlich"],
+ ["A II",3400,"Abgegrenzte Tätigkeiten nach Anweisung","abgeschlossene Berufsausbildung"],
+ ["A III",3862,"Abgegrenzte Tätigkeiten nach allgemeiner Anweisung","Berufsausbildung und einschlägige Berufserfahrung"],
+ ["A IV",4339,"Erweiterte Tätigkeiten, teilweise selbstständig","Technikerschule, Berufsakademie o. Ä."],
+ ["A V",4830,"Schwierige Tätigkeiten, teils selbstständig und eigenverantwortlich","Bachelor oder Techniker mit Berufserfahrung"],
+ ["A VI",5340,"Schwierige Tätigkeiten, weitgehend selbstständig","Master oder Diplom (FH) oder Bachelor mit Berufserfahrung"],
+ ["A VII",5878,"Schwierigere Tätigkeiten, selbstständig und weitgehend eigenverantwortlich","Master/Diplom (Uni/TH) oder Bachelor mit vertiefter Berufserfahrung; auch Poliere und Meister"],
+ ["A VIII",6432,"Besonders schwierige Tätigkeiten, selbstständig und eigenverantwortlich","Master/Diplom (Uni/TH) mit Berufserfahrung oder Abschluss mit vertiefter Berufserfahrung"],
+ ["A IX",7145,"Umfassende Tätigkeiten, selbstständig und eigenverantwortlich","Hochschulabschluss mit vertiefter Berufserfahrung"],
+ ["A X",7961,"Umfassende Tätigkeiten mit besonderer Verantwortung und Weisungsbefugnis","Hochschulabschluss mit vertiefter Berufserfahrung"]
+];
 function renderTarif(L){
   const t=$("tbl-tarif"),act=L.filter(l=>l.active&&(showNeben||!l.neben)),byG=new Map();
   act.forEach(l=>{const g=l.cur.tarif;if(!g)return;if(!byG.has(g))byG.set(g,[]);byG.get(g).push(l)});
-  t.innerHTML=`<thead><tr><th>Gruppe</th><th class="r">Monat (40 h)</th><th class="r">€/h</th><th>Bei uns</th></tr></thead><tbody>`+
-  TARIF.map(([g,m])=>{const ls=byG.get(g)||[],h=m/(40*WPM);
-    return `<tr class="${ls.length?"has":""}"><td class="grp">${g}</td><td class="r num">${eur(m,0)}</td><td class="r num"><b>${eur(h)}</b></td><td><div class="who">${ls.map(l=>`<span class="tchip" title="${esc(eur(l.cur.stundenlohn))} pro Stunde, ${l.cur.stunden} h/Woche"><span class="dot" style="background:${l.color};margin-right:4px"></span>${esc(l.name)}</span>`).join("")}</div></td></tr>`}).join("")+`</tbody>`;
+  t.innerHTML=`<thead><tr><th>Gruppe</th><th>Tätigkeit · Qualifikation</th><th class="r">Monat (40 h)</th><th class="r">€/h</th><th>Bei uns</th></tr></thead><tbody>`+
+  TARIF.map(([g,m,a,b])=>{const ls=byG.get(g)||[],h=m/(40*WPM);
+    return `<tr class="${ls.length?"has":""}"><td class="grp">${g}</td><td class="merk">${a}<small>${b}</small></td><td class="r num">${eur(m,0)}</td><td class="r num"><b>${eur(h)}</b></td><td><div class="who">${ls.map(l=>`<span class="tchip" title="${esc(eur(l.cur.stundenlohn))} pro Stunde, ${l.cur.stunden} h/Woche"><span class="dot" style="background:${l.color};margin-right:4px"></span>${esc(l.name)}</span>`).join("")}</div></td></tr>`}).join("")+`</tbody>`;
 }
 
 function renderAll(list,L){
@@ -801,8 +822,6 @@ function showTab(t){if(!document.querySelector(`[data-panel="${t}"]`))t="uebersi
 document.querySelectorAll("[data-tab]").forEach(b=>b.addEventListener("click",()=>{showTab(b.dataset.tab);render()}));
 let rsT=null,lastW=innerWidth;addEventListener("resize",()=>{if(Math.abs(innerWidth-lastW)<40)return;lastW=innerWidth;clearTimeout(rsT);rsT=setTimeout(render,200)});
 showTab((location.hash||"").slice(1)||(()=>{try{return localStorage.getItem("gs-tab")}catch{return null}})()||"uebersicht");
-const TARIF_RE=/(^|[\s(,;:])A\s?(VIII|VII|VI|IX|IV|V|X|III|II|I)(?![A-Za-zÄÖÜäöü])/;
-$("f-notiz").addEventListener("input",()=>{if($("f-tarif").value)return;const m=$("f-notiz").value.match(TARIF_RE);if(m)$("f-tarif").value="A "+m[2]});
 $("t-neben").addEventListener("change",e=>{showNeben=e.target.checked;render()});
 
 function lastName(){try{return localStorage.getItem("gs-name")||""}catch{return""}}
