@@ -248,6 +248,8 @@ img{max-width:100%}
 .faq details:last-child{border-bottom:0}
 .faq summary{cursor:pointer;font-weight:600;font-size:14px}
 .faq p{margin:6px 0 0;font-size:14px;color:var(--muted)}
+.gifbox{height:220px;border:1.5px solid var(--ink);border-radius:var(--r);background:var(--bg);display:grid;place-items:center;overflow:hidden}
+.gifbox img{max-width:100%;max-height:100%;object-fit:contain;transition:opacity .3s}
 .zsec{display:grid;gap:8px}
 .zsec h3{font-size:17px;display:flex;align-items:center;gap:8px}
 .zrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;border:1px solid var(--line);border-radius:6px;padding:8px 10px}
@@ -293,7 +295,10 @@ textarea.mono{font-family:var(--f-mono);font-size:13px;min-height:120px}
       <div id="g-denied" hidden style="display:grid;gap:10px">
         <p>Du bist als <b id="g-who"></b> angemeldet, bist aber noch nicht freigeschaltet.</p>
         <button class="btn btn-primary" type="button" id="g-req">Zugang anfragen</button>
-        <p id="g-reqdone" hidden>Deine Anfrage ist angekommen. Sobald der Admin sie bestätigt, öffnet sich die Seite von selbst. Du kannst das Fenster auch schließen und später wiederkommen.</p>
+        <div id="g-reqdone" hidden style="display:grid;gap:10px">
+          <div class="gifbox" aria-hidden="true"><img id="g-gif" alt=""></div>
+          <p style="margin:0">Deine Anfrage ist angekommen. Sobald der Admin sie bestätigt, öffnet sich die Seite von selbst. Du kannst das Fenster auch schließen und später wiederkommen.</p>
+        </div>
         <button class="btn btn-ghost" type="button" id="g-out" style="justify-content:center">Mit anderem Konto anmelden</button>
       </div>
     </div>
@@ -1050,14 +1055,28 @@ $("u-settings").addEventListener("click", () => show("s-overlay", true));
 $("s-overlay").addEventListener("click", e => { if (e.target === $("s-overlay") || e.target.closest("[data-s-close]")) show("s-overlay", false); });
 document.addEventListener("keydown", e => { if (e.key === "Escape") show("s-overlay", false); });
 
+/* Warte-GIFs: zufällige Reihenfolge, alle 6 Sekunden ein neues */
+const GIFS = ["https://i.giphy.com/E8gZWKFe0bEDLAnBiQ.webp", "https://media.tenor.com/t4Onu5MZr8EAAAAm/pilup-criplup.webp",
+  "https://i.giphy.com/ardUtH5FlenO8.webp", "https://i.giphy.com/wkPBxvetT2UUqSukUE.webp", "https://i.giphy.com/V4OJOJx9nKOaI.webp",
+  "https://i.giphy.com/cXblnKXr2BQOaYnTni.webp", "https://i.giphy.com/t8xgPfC5oNIRMrNooe.webp"];
+let gifTimer = null, gifOrder = [], gifPos = 0;
+function nextGif(){
+  if (!gifOrder.length || gifPos >= gifOrder.length) { gifOrder = GIFS.slice().sort(() => Math.random() - .5); gifPos = 0; }
+  const src = gifOrder[gifPos++], img = $("g-gif"), pre = new Image();
+  pre.onload = () => { img.style.opacity = 0; setTimeout(() => { img.src = src; img.style.opacity = 1; }, 300); };
+  pre.onerror = () => setTimeout(nextGif, 200);
+  pre.src = src;
+}
+function gifs(on){ clearInterval(gifTimer); gifTimer = null; if (on) { nextGif(); gifTimer = setInterval(nextGif, 6000); } }
+
 /* Zugang anfragen (wer noch nicht freigeschaltet ist) */
 let reqWatch = null;
 function watchRequest(user){
   const ref = doc(fs, "anfragen", user.uid); let had = false;
   show("g-req", true); show("g-reqdone", false);
   reqWatch?.(); reqWatch = onSnapshot(ref, snap => {
-    if (snap.exists()) { had = true; show("g-req", false); show("g-reqdone", true); }
-    else { if (had) location.reload(); show("g-req", true); show("g-reqdone", false); }
+    if (snap.exists()) { if (!had) gifs(true); had = true; show("g-req", false); show("g-reqdone", true); }
+    else { if (had) location.reload(); gifs(false); show("g-req", true); show("g-reqdone", false); }
   }, () => {});
   $("g-req").onclick = async () => {
     $("g-req").disabled = true;
