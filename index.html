@@ -45,10 +45,12 @@ h1,h2,h3{font-family:var(--f-display);font-weight:700;margin:0;text-wrap:balance
 
 /* Plankopf */
 .plankopf{display:grid;grid-template-columns:1fr auto;border:1.5px solid var(--ink);background:var(--surface);border-radius:2px}
-.pk-title{padding:18px 20px;border-right:1.5px solid var(--ink);
-  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:12px 12px;display:grid;gap:4px;min-width:0}
-.pk-title h1{font-size:clamp(30px,5vw,44px);line-height:1}
-.pk-title p{margin:0;color:var(--muted);max-width:52ch}
+/* Kopf auf Rasterpapier: 12-px-Raster, Grundlinien der Schrift liegen auf den Rasterlinien */
+.pk-title{padding:12px 20px 20px;border-right:1.5px solid var(--ink);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:12px 12px;background-position:0 4px;display:block;min-width:0}
+.pk-title .label{display:block;line-height:24px;position:relative;top:-1px}
+.pk-title h1{font-size:40px;line-height:48px}
+.pk-title p{margin:0;font-size:15px;line-height:24px;color:var(--muted);max-width:52ch}
 .pk-fields{display:grid;grid-template-columns:repeat(2,minmax(110px,auto));}
 .pk-cell{padding:8px 14px;border-bottom:1px solid var(--line);display:grid;gap:2px}
 .pk-cell:nth-child(odd){border-right:1px solid var(--line)}
@@ -140,6 +142,7 @@ table{width:100%;border-collapse:collapse;font-size:14px}
 th{font-family:var(--f-display);font-weight:600;text-transform:uppercase;letter-spacing:.06em;font-size:12px;color:var(--muted);text-align:left;padding:6px 8px;border-bottom:1.5px solid var(--ink);white-space:nowrap}
 td{padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top}
 td.r,th.r{text-align:right}
+td.num{white-space:nowrap}
 .delta{display:inline-block;font-weight:700;padding:1px 7px;border-radius:99px;background:var(--good-soft);color:var(--good);font-size:13px}
 .delta.zero{background:var(--bg);color:var(--muted)}
 .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:middle}
@@ -236,6 +239,15 @@ img{max-width:100%}
 .tab:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .tabpanel{display:grid;gap:20px}
 .stack{display:grid;gap:20px;align-content:start;min-width:0}
+.set-btn{font:inherit;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:99px;padding:4px 12px 4px 9px;cursor:pointer}
+.set-btn:hover{border-color:var(--muted)}
+.set-btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sset{display:grid;gap:8px}
+.sset h3{font-size:17px}
+.faq details{border-bottom:1px solid var(--line);padding:8px 0}
+.faq details:last-child{border-bottom:0}
+.faq summary{cursor:pointer;font-weight:600;font-size:14px}
+.faq p{margin:6px 0 0;font-size:14px;color:var(--muted)}
 .zsec{display:grid;gap:8px}
 .zsec h3{font-size:17px;display:flex;align-items:center;gap:8px}
 .zrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;border:1px solid var(--line);border-radius:6px;padding:8px 10px}
@@ -305,7 +317,7 @@ textarea.mono{font-family:var(--f-mono);font-size:13px;min-height:120px}
     <div class="pk-title">
       <span class="label">Bauingenieurwesen · Studierende &amp; Berufseinstieg</span>
       <h1>Gehaltsspiegel Bauis</h1>
-      <p>Was verdienen wir? Werkstudentenjobs, HiWi-Stellen und Jobs nach Ausbildung oder Studium. Bei Gehaltsänderungen kommt eine neue Phase dazu.</p>
+      <p>Was verdienen wir? Werkstudentenjobs, HiWi-Stellen und Jobs nach Ausbildung oder Studium.</p>
     </div>
     <div class="pk-fields">
       <div class="pk-cell"><span class="label">Stand</span><b id="pk-date" class="num">–</b></div>
@@ -316,7 +328,7 @@ textarea.mono{font-family:var(--f-mono);font-size:13px;min-height:120px}
     </div>
   </header>
 
-  <div class="userbar"><span>Angemeldet als <b id="u-who"></b></span><button class="theme-btn" type="button" id="u-theme" aria-label="Hell- oder Dunkelmodus"><svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg><svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1"/></svg><span id="u-theme-l">Dunkel</span></button><button class="linkbtn" type="button" id="u-admin" hidden>Zugang verwalten <span class="badge" id="u-badge" hidden></span></button><button class="linkbtn" type="button" id="u-out">Abmelden</button></div>
+  <div class="userbar"><button class="linkbtn" type="button" id="u-admin" hidden>Zugang verwalten <span class="badge" id="u-badge" hidden></span></button><button class="set-btn" type="button" id="u-settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Einstellungen</button></div>
 
   <div class="banner" id="demo-banner" hidden>
     <span><b>Beispieldaten</b>&nbsp; Noch keine echten Einträge. So sieht die Seite mit Daten aus – die Beispiele verschwinden mit dem ersten echten Eintrag.</span>
@@ -332,8 +344,6 @@ textarea.mono{font-family:var(--f-mono);font-size:13px;min-height:120px}
   </nav>
 
   <div class="tabpanel" role="tabpanel" data-panel="uebersicht" aria-labelledby="tab-uebersicht">
-    <div class="toolbar"><label class="toggle" style="color:var(--ink);font-weight:600"><input type="checkbox" id="t-neben" checked> Nebenjobs anzeigen</label><span class="muted" style="font-size:13px">Wer mehrere Jobs gleichzeitig hat: Der mit den meisten Wochenstunden ist der Hauptjob, die anderen sind Nebenjobs. Nebenjobs zählen nie in Median und Kennzahlen.</span></div>
-
     <section class="kpis" aria-label="Kennzahlen">
       <div class="kpi main"><span class="label">Median Stundenlohn</span><span class="v num" id="k-med">–</span><span class="s" id="k-med-s">aktuelle Verträge</span></div>
       <div class="kpi"><span class="label">Spanne</span><span class="v num" id="k-span">–</span><span class="s" id="k-span-s"></span></div>
@@ -471,6 +481,30 @@ textarea.mono{font-family:var(--f-mono);font-size:13px;min-height:120px}
   </form>
 </div>
 <div class="toast" id="toast" hidden></div>
+<div class="overlay" id="s-overlay" hidden>
+  <div class="dialog sm" role="dialog" aria-modal="true" aria-labelledby="s-title" style="width:min(520px,100%)">
+    <div class="dlg-h"><h2 id="s-title">Einstellungen</h2><button class="btn btn-ghost" type="button" data-s-close>Schließen</button></div>
+    <div class="dlg-b">
+      <div class="sset"><h3>Darstellung</h3>
+        <div class="seg" id="s-theme"><button type="button" data-v="system" aria-pressed="true">Wie Gerät</button><button type="button" data-v="light" aria-pressed="false">Hell</button><button type="button" data-v="dark" aria-pressed="false">Dunkel</button></div></div>
+      <div class="sset"><h3>Anzeige</h3>
+        <label class="toggle" style="color:var(--ink);font-size:14px"><input type="checkbox" id="t-neben" checked> Nebenjobs anzeigen</label>
+        <small class="muted">Wer mehrere Jobs gleichzeitig hat: Der mit den meisten Wochenstunden ist der Hauptjob, die anderen sind Nebenjobs. Nebenjobs zählen nie in Median und Kennzahlen.</small></div>
+      <div class="sset"><h3>Konto</h3>
+        <span style="font-size:14px">Angemeldet als <b id="u-who"></b></span>
+        <button class="btn btn-ghost" type="button" id="u-out" style="justify-self:start">Abmelden</button></div>
+      <div class="sset faq"><h3>Fragen &amp; Antworten</h3>
+        <details><summary>Wer sieht meine Daten?</summary><p>Nur freigeschaltete Mitglieder der Gruppe. Die Einträge liegen bei Google Firebase auf Servern in Frankfurt, nicht im öffentlichen Code der Seite.</p></details>
+        <details><summary>Wer kann meine Einträge ändern oder löschen?</summary><p>Nur du und die Admins. Über „Bearbeiten“ in der Liste kannst du deine Einträge jederzeit ändern oder löschen.</p></details>
+        <details><summary>Was bedeutet „anonym eintragen“?</summary><p>Name und Arbeitgeber werden nicht gespeichert, die anderen sehen nur „Anonym A“ usw. Wer die Seite betreibt, könnte technisch sehen, von welchem Konto ein Eintrag stammt.</p></details>
+        <details><summary>Mein Gehalt hat sich geändert oder mein Vertrag wurde verlängert.</summary><p>In „Einträge“ bei deinem aktuellen Eintrag: „Neues Gehalt“ legt eine neue Phase an, „Verlängern“ ändert nur das Enddatum.</p></details>
+        <details><summary>Was ist Haupt- und was Nebenjob?</summary><p>Hast du mehrere Jobs gleichzeitig, zählt der mit den meisten Wochenstunden als Hauptjob. Nebenjobs erscheinen schraffiert und zählen nicht in Median und Kennzahlen.</p></details>
+        <details><summary>Wie trage ich eine Festanstellung ein?</summary><p>Art des Jobs „Festanstellung“, Gehaltsart „Monatsgehalt bei Vollzeit“ und deine Wochenstunden. Festanstellungen stehen in Rangliste und Verlauf, zählen aber nicht in die Werkstudenten-Kennzahlen.</p></details>
+        <details><summary>Wie bekomme ich die Seite aufs Handy?</summary><p>Seite im Browser öffnen, im Menü „Installieren“ bzw. „Zum Startbildschirm hinzufügen“ wählen. Du bleibst angemeldet, bis du dich abmeldest.</p></details>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="overlay" id="z-overlay" hidden>
   <div class="dialog sm" role="dialog" aria-modal="true" aria-labelledby="z-title" style="width:min(560px,100%)">
     <div class="dlg-h"><h2 id="z-title">Zugang verwalten</h2><button class="btn btn-ghost" type="button" data-z-close>Schließen</button></div>
@@ -1007,12 +1041,14 @@ onAuthStateChanged(auth, async user => {
   window.__startApp(api);
 });
 
-/* Hell / Dunkel umschalten */
-const mq = matchMedia("(prefers-color-scheme: dark)");
-const curTheme = () => document.documentElement.getAttribute("data-theme") || (mq.matches ? "dark" : "light");
-function paintThemeBtn(){ const to = curTheme() === "dark" ? "light" : "dark"; $("u-theme").dataset.to = to; $("u-theme-l").textContent = to === "dark" ? "Dunkel" : "Hell"; }
-$("u-theme").addEventListener("click", () => { const t = curTheme() === "dark" ? "light" : "dark"; document.documentElement.setAttribute("data-theme", t); LS.set("gs-theme", t); paintThemeBtn(); });
-mq.addEventListener?.("change", paintThemeBtn); paintThemeBtn();
+/* Einstellungen: Darstellung */
+function applyTheme(t){ if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t); else document.documentElement.removeAttribute("data-theme");
+  [...$("s-theme").children].forEach(b => b.setAttribute("aria-pressed", String(b.dataset.v === (t || "system")))); }
+applyTheme(LS.get("gs-theme") || "system");
+$("s-theme").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; const t = b.dataset.v; if (t === "system") LS.del("gs-theme"); else LS.set("gs-theme", t); applyTheme(t); });
+$("u-settings").addEventListener("click", () => show("s-overlay", true));
+$("s-overlay").addEventListener("click", e => { if (e.target === $("s-overlay") || e.target.closest("[data-s-close]")) show("s-overlay", false); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") show("s-overlay", false); });
 
 /* Zugang anfragen (wer noch nicht freigeschaltet ist) */
 let reqWatch = null;
