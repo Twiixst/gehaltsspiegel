@@ -845,7 +845,7 @@ $("g-mailform").addEventListener("submit", async ev => {
   } catch (e) { gate("login", errText(e)); }
   finally { $("g-mailbtn").disabled = false; }
 });
-$("g-finishform").addEventListener("submit", async ev => {
+$("g-finish").addEventListener("submit", async ev => {
   ev.preventDefault(); await finishLink($("g-finishmail").value.trim().toLowerCase());
 });
 async function finishLink(email){
