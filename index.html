@@ -7,6 +7,7 @@
 <meta name="description" content="Gemeinsamer Gehaltsspiegel für Werkstudierende im Bauingenieurwesen">
 <meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#1B2430">
+<script>try{var t=localStorage.getItem("gs-theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Gehaltsspiegel">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%231B2430'/%3E%3Crect x='14' y='34' width='8' height='16' fill='%23D95F0E'/%3E%3Crect x='28' y='24' width='8' height='26' fill='%23D95F0E'/%3E%3Crect x='42' y='14' width='8' height='36' fill='%23D95F0E'/%3E%3C/svg%3E">
@@ -197,6 +198,11 @@ img{max-width:100%}
 .btn-google:hover{background:var(--bg)}
 .spin{width:22px;height:22px;border:3px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:sp 1s linear infinite;justify-self:center}
 @keyframes sp{to{transform:rotate(360deg)}}
+.theme-btn{font:inherit;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:99px;padding:4px 11px;cursor:pointer}
+.theme-btn:hover{border-color:var(--muted)}
+.theme-btn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.theme-btn .i-moon{fill:currentColor;stroke:none}
+.theme-btn[data-to="light"] .i-moon,.theme-btn[data-to="dark"] .i-sun{display:none}
 textarea.mono{font-family:var(--f-mono);font-size:13px;min-height:120px}
 </style>
 </head>
@@ -253,7 +259,7 @@ textarea.mono{font-family:var(--f-mono);font-size:13px;min-height:120px}
     </div>
   </header>
 
-  <div class="userbar"><span>Angemeldet als <b id="u-who"></b></span><button class="linkbtn" type="button" id="u-admin" hidden>Zugang verwalten</button><button class="linkbtn" type="button" id="u-out">Abmelden</button></div>
+  <div class="userbar"><span>Angemeldet als <b id="u-who"></b></span><button class="theme-btn" type="button" id="u-theme" aria-label="Hell- oder Dunkelmodus"><svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg><svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1"/></svg><span id="u-theme-l">Dunkel</span></button><button class="linkbtn" type="button" id="u-admin" hidden>Zugang verwalten</button><button class="linkbtn" type="button" id="u-out">Abmelden</button></div>
 
   <div class="banner" id="demo-banner" hidden>
     <span><b>Beispieldaten</b>&nbsp; Noch keine echten Einträge. So sieht die Seite mit Daten aus – die Beispiele verschwinden mit dem ersten echten Eintrag.</span>
@@ -891,6 +897,13 @@ onAuthStateChanged(auth, async user => {
   window.__fs = { fs, doc, setDoc, getDoc, collection, addDoc };
   window.__startApp(api);
 });
+
+/* Hell / Dunkel umschalten */
+const mq = matchMedia("(prefers-color-scheme: dark)");
+const curTheme = () => document.documentElement.getAttribute("data-theme") || (mq.matches ? "dark" : "light");
+function paintThemeBtn(){ const to = curTheme() === "dark" ? "light" : "dark"; $("u-theme").dataset.to = to; $("u-theme-l").textContent = to === "dark" ? "Dunkel" : "Hell"; }
+$("u-theme").addEventListener("click", () => { const t = curTheme() === "dark" ? "light" : "dark"; document.documentElement.setAttribute("data-theme", t); LS.set("gs-theme", t); paintThemeBtn(); });
+mq.addEventListener?.("change", paintThemeBtn); paintThemeBtn();
 
 /* Zugang verwalten (nur Admins) */
 $("u-admin").addEventListener("click", async () => {
