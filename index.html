@@ -187,11 +187,15 @@ img{max-width:100%}
 .userbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end;font-size:13px;color:var(--muted)}
 .userbar b{color:var(--ink);font-weight:600}
 .linkbtn{font:inherit;font-size:13px;background:none;border:0;color:var(--accent);cursor:pointer;padding:2px 4px;text-decoration:underline;text-underline-offset:2px}
-.gate{min-height:100vh;display:grid;place-items:center;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px}
+.gate{min-height:100vh;display:grid;place-items:center;align-content:center;gap:14px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px}
 .gate-card{width:min(440px,100%);background:var(--surface);border:1.5px solid var(--ink);border-radius:var(--r);display:grid}
 .gate-card .pk-title{border-right:0;border-bottom:1.5px solid var(--ink)}
 .gate-body{padding:18px 20px;display:grid;gap:14px}
 .gate-body p{margin:0}
+.info{width:min(440px,100%);border:1px solid var(--line);border-radius:var(--r);background:var(--surface);font-size:14px}
+.info summary{cursor:pointer;padding:12px 16px;font-weight:600;list-style-position:inside}
+.info ul{margin:0;padding:0 16px 14px 34px;display:grid;gap:6px;color:var(--ink)}
+.info li b{font-weight:600}
 .or{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13px}
 .or::before,.or::after{content:"";flex:1;border-top:1px solid var(--line)}
 .btn-google{background:var(--surface);color:var(--ink);border:1px solid var(--ink);width:100%;justify-content:center}
@@ -203,6 +207,16 @@ img{max-width:100%}
 .theme-btn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .theme-btn .i-moon{fill:currentColor;stroke:none}
 .theme-btn[data-to="light"] .i-moon,.theme-btn[data-to="dark"] .i-sun{display:none}
+.zsec{display:grid;gap:8px}
+.zsec h3{font-size:17px;display:flex;align-items:center;gap:8px}
+.zrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;border:1px solid var(--line);border-radius:6px;padding:8px 10px}
+.zrow .zmail{flex:1 1 180px;min-width:0;overflow-wrap:anywhere;font-size:14px}
+.zrow .zmail small{display:block;color:var(--muted);font-size:12px}
+.zrow.req{border-color:var(--accent);background:var(--accent-soft)}
+.zadd{display:flex;gap:8px;flex-wrap:wrap}
+.zadd input{flex:1 1 200px;width:auto}
+.badge{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;border-radius:99px;background:var(--accent);color:var(--accent-ink);font-size:11px;font-weight:700;text-decoration:none}
+.icon-btn.danger{color:#C23B3B;border-color:currentColor}
 textarea.mono{font-family:var(--f-mono);font-size:13px;min-height:120px}
 </style>
 </head>
@@ -211,7 +225,7 @@ textarea.mono{font-family:var(--f-mono);font-size:13px;min-height:120px}
 
 <div class="gate" id="gate">
   <div class="gate-card">
-    <div class="pk-title"><span class="label">Bauingenieurwesen · Studierende &amp; Berufseinstieg</span><h1>Gehaltsspiegel</h1></div>
+    <div class="pk-title"><span class="label">Bauingenieurwesen · Studierende &amp; Berufseinstieg</span><h1>Gehaltsspiegel Bauis</h1></div>
     <div class="gate-body">
       <div class="err" id="g-msg" hidden></div>
       <div id="g-wait" style="display:grid;gap:10px;justify-items:center"><div class="spin" aria-hidden="true"></div><span class="muted">Einen Moment …</span></div>
@@ -236,18 +250,32 @@ textarea.mono{font-family:var(--f-mono);font-size:13px;min-height:120px}
         <button class="btn btn-primary" type="submit">Anmelden</button>
       </form>
       <div id="g-denied" hidden style="display:grid;gap:10px">
-        <p>Du bist als <b id="g-who"></b> angemeldet, stehst aber noch nicht auf der Zugangsliste. Schick diese Adresse an den Admin der Gruppe, dann wirst du freigeschaltet.</p>
+        <p>Du bist als <b id="g-who"></b> angemeldet, bist aber noch nicht freigeschaltet.</p>
+        <button class="btn btn-primary" type="button" id="g-req">Zugang anfragen</button>
+        <p id="g-reqdone" hidden>Deine Anfrage ist angekommen. Sobald der Admin sie bestätigt, öffnet sich die Seite von selbst. Du kannst das Fenster auch schließen und später wiederkommen.</p>
         <button class="btn btn-ghost" type="button" id="g-out" style="justify-content:center">Mit anderem Konto anmelden</button>
       </div>
     </div>
   </div>
+  <details class="info">
+    <summary>Wie funktioniert das, und was passiert mit meinen Daten?</summary>
+    <ul>
+      <li><b>Wofür:</b> ein gemeinsamer Gehaltsvergleich, nur für unsere Gruppe.</li>
+      <li><b>Anmelden:</b> am einfachsten mit Google. Alternativ per Link an deine E-Mail-Adresse, ganz ohne Passwort. Danach bleibst du auf dem Gerät angemeldet.</li>
+      <li><b>Zugang:</b> Die Daten sieht nur, wer freigeschaltet ist. Neu dabei? Nach dem Anmelden auf „Zugang anfragen“ tippen, ein Admin bestätigt das.</li>
+      <li><b>Speicherort:</b> Die Einträge liegen bei Google Firebase auf Servern in Frankfurt, nicht im öffentlichen Code der Seite.</li>
+      <li><b>Deine Einträge:</b> Nur du (und die Admins) können sie ändern oder löschen. Das geht jederzeit.</li>
+      <li><b>Anonym:</b> Name und Arbeitgeber werden dann nicht gespeichert, die anderen sehen nur „Anonym A“. Wer die Seite betreibt, könnte technisch sehen, von welchem Konto ein Eintrag stammt.</li>
+      <li><b>Auf dem Handy:</b> Seite öffnen und „Zum Startbildschirm hinzufügen“, dann ist sie wie eine App.</li>
+    </ul>
+  </details>
 </div>
 <div id="app" hidden>
 <div class="wrap">
   <header class="plankopf">
     <div class="pk-title">
       <span class="label">Bauingenieurwesen · Studierende &amp; Berufseinstieg</span>
-      <h1>Gehaltsspiegel</h1>
+      <h1>Gehaltsspiegel Bauis</h1>
       <p>Was verdienen wir? Werkstudentenjobs, HiWi-Stellen und Jobs nach Ausbildung oder Studium. Bei Gehaltsänderungen kommt eine neue Phase dazu.</p>
     </div>
     <div class="pk-fields">
@@ -259,7 +287,7 @@ textarea.mono{font-family:var(--f-mono);font-size:13px;min-height:120px}
     </div>
   </header>
 
-  <div class="userbar"><span>Angemeldet als <b id="u-who"></b></span><button class="theme-btn" type="button" id="u-theme" aria-label="Hell- oder Dunkelmodus"><svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg><svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1"/></svg><span id="u-theme-l">Dunkel</span></button><button class="linkbtn" type="button" id="u-admin" hidden>Zugang verwalten</button><button class="linkbtn" type="button" id="u-out">Abmelden</button></div>
+  <div class="userbar"><span>Angemeldet als <b id="u-who"></b></span><button class="theme-btn" type="button" id="u-theme" aria-label="Hell- oder Dunkelmodus"><svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg><svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1"/></svg><span id="u-theme-l">Dunkel</span></button><button class="linkbtn" type="button" id="u-admin" hidden>Zugang verwalten <span class="badge" id="u-badge" hidden></span></button><button class="linkbtn" type="button" id="u-out">Abmelden</button></div>
 
   <div class="banner" id="demo-banner" hidden>
     <span><b>Beispieldaten</b>&nbsp; Noch keine echten Einträge. So sieht die Seite mit Daten aus – die Beispiele verschwinden mit dem ersten echten Eintrag.</span>
@@ -391,15 +419,16 @@ textarea.mono{font-family:var(--f-mono);font-size:13px;min-height:120px}
 </div>
 <div class="toast" id="toast" hidden></div>
 <div class="overlay" id="z-overlay" hidden>
-  <form class="dialog sm" id="z-form" novalidate role="dialog" aria-modal="true" aria-labelledby="z-title" style="width:min(520px,100%)">
+  <div class="dialog sm" role="dialog" aria-modal="true" aria-labelledby="z-title" style="width:min(560px,100%)">
     <div class="dlg-h"><h2 id="z-title">Zugang verwalten</h2><button class="btn btn-ghost" type="button" data-z-close>Schließen</button></div>
     <div class="dlg-b">
-      <div class="field"><label for="z-emails">Wer darf rein? (eine E-Mail-Adresse pro Zeile)</label><textarea id="z-emails" class="mono" spellcheck="false"></textarea><small>Bei Google-Anmeldung die Gmail-Adresse, sonst die Adresse für den E-Mail-Link.</small></div>
-      <div class="field"><label for="z-admins">Admins (dürfen diese Liste ändern und alle Einträge bearbeiten)</label><textarea id="z-admins" class="mono" spellcheck="false" style="min-height:60px"></textarea></div>
+      <div class="zsec" id="z-reqsec"><h3>Offene Anfragen <span class="badge" id="z-reqn"></span></h3><div id="z-reqs" style="display:grid;gap:6px"></div></div>
+      <div class="zsec"><h3>Freigeschaltet</h3><div id="z-members" style="display:grid;gap:6px"></div>
+        <form class="zadd" id="z-addform" novalidate><input type="email" id="z-add" placeholder="E-Mail-Adresse direkt hinzufügen" aria-label="E-Mail-Adresse hinzufügen"><button class="btn btn-ghost" type="submit">Hinzufügen</button></form>
+        <small class="muted">Admins dürfen Leute freischalten und alle Einträge bearbeiten. Wer entfernt wird, kommt nicht mehr rein. Seine Einträge bleiben stehen, bis du sie löschst.</small></div>
       <div class="err" id="z-err" hidden></div>
     </div>
-    <div class="dlg-f"><span></span><div style="display:flex;gap:8px"><button class="btn btn-ghost" type="button" data-z-close>Abbrechen</button><button class="btn btn-primary" style="width:auto" type="submit">Speichern</button></div></div>
-  </form>
+  </div>
 </div>
 
 
@@ -812,7 +841,7 @@ window.__startApp=api=>{
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, doc, addDoc, setDoc, updateDoc, deleteDoc, getDoc, getDocs, onSnapshot, query, limit } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, doc, addDoc, setDoc, updateDoc, deleteDoc, getDoc, getDocs, onSnapshot, query, limit, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAzBSWMcy-JyjIFMRxs7G-0Mr-9oidMIHA",
@@ -873,10 +902,10 @@ onAuthStateChanged(auth, async user => {
   const email = (user.email || "").toLowerCase();
   // Zugang prüfen: wer Einträge lesen darf, steht auf der Zugangsliste
   try { await getDocs(query(collection(fs, "eintraege"), limit(1))); }
-  catch (e) { $("g-who").textContent = email || "(ohne E-Mail)"; gate("denied"); return; }
+  catch (e) { $("g-who").textContent = email || "(ohne E-Mail)"; gate("denied"); watchRequest(user); return; }
   let admin = false;
   try { const z = await getDoc(doc(fs, "config", "zugang")); admin = true; window.__zugang = z.exists() ? z.data() : { emails: [], admins: [] }; } catch {}
-  $("u-who").textContent = email; show("u-admin", admin);
+  $("u-who").textContent = email; show("u-admin", admin); if (admin) watchAdmin();
   gate("app");
   if (started) return; started = true;
   const api = {
@@ -905,23 +934,59 @@ function paintThemeBtn(){ const to = curTheme() === "dark" ? "light" : "dark"; $
 $("u-theme").addEventListener("click", () => { const t = curTheme() === "dark" ? "light" : "dark"; document.documentElement.setAttribute("data-theme", t); LS.set("gs-theme", t); paintThemeBtn(); });
 mq.addEventListener?.("change", paintThemeBtn); paintThemeBtn();
 
+/* Zugang anfragen (wer noch nicht freigeschaltet ist) */
+let reqWatch = null;
+function watchRequest(user){
+  const ref = doc(fs, "anfragen", user.uid); let had = false;
+  show("g-req", true); show("g-reqdone", false);
+  reqWatch?.(); reqWatch = onSnapshot(ref, snap => {
+    if (snap.exists()) { had = true; show("g-req", false); show("g-reqdone", true); }
+    else { if (had) location.reload(); show("g-req", true); show("g-reqdone", false); }
+  }, () => {});
+  $("g-req").onclick = async () => {
+    $("g-req").disabled = true;
+    try { await setDoc(ref, { email: (user.email || "").toLowerCase(), name: (user.displayName || "").slice(0, 80), zeit: Date.now() }); }
+    catch { gate("denied", "Die Anfrage hat nicht geklappt. Bitte nochmal versuchen."); }
+    finally { $("g-req").disabled = false; }
+  };
+}
+
 /* Zugang verwalten (nur Admins) */
-$("u-admin").addEventListener("click", async () => {
-  let z = window.__zugang || { emails: [], admins: [] };
-  try { const s = await getDoc(doc(fs, "config", "zugang")); if (s.exists()) z = s.data(); } catch {}
-  $("z-emails").value = (z.emails || []).join("\n"); $("z-admins").value = (z.admins || []).join("\n");
-  $("z-err").hidden = true; show("z-overlay", true);
+let zug = { emails: [], admins: [] }, reqs = [], adminWatching = false;
+const zref = () => doc(fs, "config", "zugang");
+const esc2 = t => String(t ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+const zerr = t => { $("z-err").textContent = t; $("z-err").hidden = !t; };
+function watchAdmin(){
+  if (adminWatching) return; adminWatching = true;
+  onSnapshot(zref(), s => { zug = s.exists() ? { emails: s.data().emails || [], admins: s.data().admins || [] } : { emails: [], admins: [] }; renderZ(); }, () => {});
+  onSnapshot(collection(fs, "anfragen"), s => { reqs = s.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (a.zeit || 0) - (b.zeit || 0)); renderZ(); }, () => {});
+}
+function renderZ(){
+  const n = reqs.length; $("u-badge").textContent = n; show("u-badge", n > 0); $("z-reqn").textContent = n; show("z-reqsec", n > 0);
+  $("z-reqs").innerHTML = reqs.map(r => `<div class="zrow req"><span class="zmail">${esc2(r.email)}${r.name ? `<small>${esc2(r.name)}</small>` : ""}</span><button class="icon-btn" type="button" data-ok="${esc2(r.id)}">Freischalten</button><button class="icon-btn danger" type="button" data-no="${esc2(r.id)}">Ablehnen</button></div>`).join("");
+  const me = (auth.currentUser?.email || "").toLowerCase();
+  const all = [...new Set([...zug.admins, ...zug.emails])].sort();
+  $("z-members").innerHTML = all.length ? all.map(m => { const a = zug.admins.includes(m), self = m === me;
+    return `<div class="zrow"><span class="zmail">${esc2(m)}<small>${a ? "Admin" : "Mitglied"}${self ? " · du" : ""}</small></span>${self ? "" : `<button class="icon-btn" type="button" data-role="${esc2(m)}">${a ? "Admin entziehen" : "Zum Admin machen"}</button><button class="icon-btn danger" type="button" data-rm="${esc2(m)}">Entfernen</button>`}</div>` }).join("")
+    : `<span class="muted">Noch niemand freigeschaltet.</span>`;
+}
+async function zDo(fn, ok){ zerr(""); try { await fn(); if (ok) window.__toast?.(ok); } catch { zerr("Das hat nicht geklappt. Bitte nochmal versuchen."); } }
+$("u-admin").addEventListener("click", () => { zerr(""); renderZ(); show("z-overlay", true); });
+$("z-overlay").addEventListener("click", async e => {
+  if (e.target === $("z-overlay") || e.target.closest("[data-z-close]")) return show("z-overlay", false);
+  const ok = e.target.closest("[data-ok]"), no = e.target.closest("[data-no]"), rm = e.target.closest("[data-rm]"), role = e.target.closest("[data-role]");
+  if (ok) { const r = reqs.find(x => x.id === ok.dataset.ok); if (r) await zDo(async () => { await setDoc(zref(), { emails: arrayUnion(r.email) }, { merge: true }); await deleteDoc(doc(fs, "anfragen", r.id)); }, `${r.email} ist freigeschaltet`); }
+  if (no) await zDo(() => deleteDoc(doc(fs, "anfragen", no.dataset.no)), "Anfrage abgelehnt");
+  if (rm) { const m = rm.dataset.rm;
+    if (rm.dataset.confirm !== "1") { rm.dataset.confirm = "1"; rm.textContent = "Wirklich entfernen?"; return; }
+    await zDo(() => setDoc(zref(), { emails: arrayRemove(m), admins: arrayRemove(m) }, { merge: true }), `${m} entfernt`); }
+  if (role) { const m = role.dataset.role, a = zug.admins.includes(m);
+    await zDo(() => setDoc(zref(), a ? { admins: arrayRemove(m), emails: arrayUnion(m) } : { admins: arrayUnion(m) }, { merge: true }), a ? "Admin-Rechte entzogen" : `${m} ist jetzt Admin`); }
 });
-$("z-overlay").addEventListener("click", e => { if (e.target === $("z-overlay") || e.target.closest("[data-z-close]")) show("z-overlay", false); });
-$("z-form").addEventListener("submit", async ev => {
-  ev.preventDefault();
-  const parse = t => [...new Set(t.split(/[\s,;]+/).map(x => x.trim().toLowerCase()).filter(Boolean))];
-  const emails = parse($("z-emails").value), admins = parse($("z-admins").value);
-  const bad = emails.concat(admins).filter(x => !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(x));
-  if (bad.length) { $("z-err").textContent = "Keine gültige E-Mail-Adresse: " + bad.join(", "); $("z-err").hidden = false; return; }
-  if (!admins.length) { $("z-err").textContent = "Mindestens ein Admin muss eingetragen sein."; $("z-err").hidden = false; return; }
-  try { await setDoc(doc(fs, "config", "zugang"), { emails, admins }); window.__zugang = { emails, admins }; show("z-overlay", false); window.__toast?.("Zugangsliste gespeichert"); }
-  catch { $("z-err").textContent = "Speichern hat nicht geklappt."; $("z-err").hidden = false; }
+$("z-addform").addEventListener("submit", async ev => {
+  ev.preventDefault(); const m = $("z-add").value.trim().toLowerCase();
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(m)) return zerr("Das sieht nicht nach einer E-Mail-Adresse aus.");
+  await zDo(() => setDoc(zref(), { emails: arrayUnion(m) }, { merge: true }), `${m} hinzugefügt`); $("z-add").value = "";
 });
 </script>
 </body>
