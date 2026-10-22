@@ -215,6 +215,14 @@ img{max-width:100%}
 .tarif-tbl .who{display:flex;flex-wrap:wrap;gap:4px}
 .tchip{font-size:12px;border:1px solid var(--line);border-radius:99px;padding:1px 8px;background:var(--surface);white-space:nowrap}
 .tarif-note{color:var(--muted);font-size:13px;margin:0;max-width:80ch}
+.tabs{display:flex;gap:4px;border-bottom:1.5px solid var(--ink);overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{font-family:var(--f-display);font-weight:600;font-size:17px;letter-spacing:.02em;background:none;border:1px solid transparent;border-bottom:0;border-radius:6px 6px 0 0;color:var(--muted);padding:8px 14px;cursor:pointer;white-space:nowrap;margin-bottom:-1.5px}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{color:var(--ink);background:var(--surface);border-color:var(--ink);border-bottom:1.5px solid var(--surface)}
+.tab:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tabpanel{display:grid;gap:20px}
+.stack{display:grid;gap:20px;align-content:start;min-width:0}
 .zsec{display:grid;gap:8px}
 .zsec h3{font-size:17px;display:flex;align-items:center;gap:8px}
 .zrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;border:1px solid var(--line);border-radius:6px;padding:8px 10px}
@@ -304,71 +312,86 @@ textarea.mono{font-family:var(--f-mono);font-size:13px;min-height:120px}
     <span>Du kannst die Daten ansehen, aber nichts eintragen. Bitte den Admin, dich freizuschalten.</span>
   </div>
 
-  <div class="toolbar"><label class="toggle" style="color:var(--ink);font-weight:600"><input type="checkbox" id="t-neben" checked> Nebenjobs anzeigen</label><span class="muted" style="font-size:13px">Wer mehrere Jobs gleichzeitig hat: Der mit den meisten Wochenstunden ist der Hauptjob, die anderen sind Nebenjobs. Nebenjobs zählen nie in Median und Kennzahlen.</span></div>
+  <nav class="tabs" role="tablist" aria-label="Bereiche">
+    <button class="tab" type="button" role="tab" id="tab-uebersicht" data-tab="uebersicht" aria-selected="true">Übersicht</button>
+    <button class="tab" type="button" role="tab" id="tab-eintraege" data-tab="eintraege" aria-selected="false">Einträge</button>
+    <button class="tab" type="button" role="tab" id="tab-tarif" data-tab="tarif" aria-selected="false">Tarif &amp; Mindestlohn</button>
+  </nav>
 
-  <section class="kpis" aria-label="Kennzahlen">
-    <div class="kpi main"><span class="label">Median Stundenlohn</span><span class="v num" id="k-med">–</span><span class="s" id="k-med-s">aktuelle Verträge</span></div>
-    <div class="kpi"><span class="label">Spanne</span><span class="v num" id="k-span">–</span><span class="s" id="k-span-s"></span></div>
-    <div class="kpi"><span class="label">Ø Monatsbrutto</span><span class="v num" id="k-month">–</span><span class="s" id="k-month-s"></span></div>
-    <div class="kpi"><span class="label">Über Mindestlohn</span><span class="v num" id="k-milo">–</span><span class="s" id="k-milo-s"></span></div>
-    <div class="kpi"><span class="label">Größte Erhöhung</span><span class="v num" id="k-up">–</span><span class="s" id="k-up-s">letzte Änderung</span></div>
-  </section>
+  <div class="tabpanel" role="tabpanel" data-panel="uebersicht" aria-labelledby="tab-uebersicht">
+    <div class="toolbar"><label class="toggle" style="color:var(--ink);font-weight:600"><input type="checkbox" id="t-neben" checked> Nebenjobs anzeigen</label><span class="muted" style="font-size:13px">Wer mehrere Jobs gleichzeitig hat: Der mit den meisten Wochenstunden ist der Hauptjob, die anderen sind Nebenjobs. Nebenjobs zählen nie in Median und Kennzahlen.</span></div>
 
-  <div class="grid2">
-    <section class="card">
-      <div class="card-h"><h2>Rangliste</h2><span class="hint">Stundenlohn, aktuelle Stellen</span></div>
-      <div class="filters" id="rank-jfilter" aria-label="Nach Jobart filtern"></div>
-      <div class="filters" id="rank-filter" aria-label="Nach Tätigkeit filtern"></div>
-      <div class="rank" id="rank"></div>
-      <div class="rank-foot" id="rank-foot"></div>
+    <section class="kpis" aria-label="Kennzahlen">
+      <div class="kpi main"><span class="label">Median Stundenlohn</span><span class="v num" id="k-med">–</span><span class="s" id="k-med-s">aktuelle Verträge</span></div>
+      <div class="kpi"><span class="label">Spanne</span><span class="v num" id="k-span">–</span><span class="s" id="k-span-s"></span></div>
+      <div class="kpi"><span class="label">Ø Monatsbrutto</span><span class="v num" id="k-month">–</span><span class="s" id="k-month-s"></span></div>
+      <div class="kpi"><span class="label">Über Mindestlohn</span><span class="v num" id="k-milo">–</span><span class="s" id="k-milo-s"></span></div>
+      <div class="kpi"><span class="label">Größte Erhöhung</span><span class="v num" id="k-up">–</span><span class="s" id="k-up-s">letzte Änderung</span></div>
     </section>
-    <section class="card">
-      <div class="card-h"><h2>Gehaltsentwicklung</h2><span class="hint">Stundenlohn über die Zeit</span></div>
-      <div class="range-row" id="range-row" hidden><span class="label" style="min-width:0">Zeitraum</span><input type="range" id="r-from" min="0" max="0" step="1" value="0" aria-label="Zeitraum ab"><span id="r-from-l" class="num"></span><button class="fchip" type="button" id="r-all" hidden>Alles zeigen</button></div>
-      <div class="legend" id="legend"></div>
-      <div class="chart" id="trend"></div>
-    </section>
-  </div>
 
-  <div class="grid2b">
-    <section class="card">
-      <div class="card-h"><h2>Steigerungen</h2><span class="hint">letzte Gehaltsänderung je Stelle</span></div>
-      <div class="tbl-wrap"><table id="tbl-up"></table></div>
-    </section>
-    <section class="card">
-      <div class="card-h"><h2>Nach Tätigkeit</h2><span class="hint">Median Stundenlohn, inkl. Nebenjobs</span></div>
-      <div class="rank" id="by-bereich"></div>
-    </section>
-  </div>
-
-  <div class="grid2">
-    <section class="card">
-      <div class="card-h"><h2>Mindestlohn</h2><span class="hint">gesetzlich, brutto pro Stunde</span></div>
-      <p class="muted" style="margin:0;font-size:14px" id="milo-sum"></p>
-      <div class="tbl-wrap"><table class="milo-tbl" id="milo-tbl"></table></div>
-    </section>
-    <section class="card">
-      <div class="card-h"><h2>Mehr Stunden = besserer Lohn?</h2><span class="hint">Hauptjobs</span></div>
-      <div class="chart" id="scatter"></div>
-    </section>
-  </div>
-
-  <section class="card">
-    <div class="card-h"><h2>Tarif Bau: Gehaltsgruppen</h2><span class="hint">Angestellte im Bauhauptgewerbe, gültig ab 01.04.2026</span></div>
-    <p class="tarif-note">Werkstudenten fallen nicht automatisch unter den Tarif, viele Baufirmen orientieren sich aber daran und zahlen den Stundenlohn der Gruppe anteilig. Die Spalte „Bei uns“ zeigt, wer in welcher Gruppe eingetragen ist.</p>
-    <div class="tbl-wrap"><table class="tarif-tbl" id="tbl-tarif"></table></div>
-    <p class="tarif-note">Quelle: Tarifvertrag Bauhauptgewerbe, Gehälter ab 01.04.2026 (bundeseinheitlich West/Ost), 40-Stunden-Woche, ohne 13. Monatseinkommen. Beschreibungen gekürzt nach dem Rahmentarifvertrag für Angestellte und Poliere. Maßgeblich ist immer die Eingruppierung im eigenen Vertrag.</p>
-  </section>
-
-  <section class="card">
-    <div class="card-h"><h2>Alle Einträge</h2><span style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span class="hint" id="all-count">Bearbeiten nur bei eigenen Einträgen</span><button class="btn btn-ghost" type="button" id="btn-export" hidden>Als CSV exportieren</button></span></div>
-    <div class="tbl-tools">
-      <input type="search" id="q" placeholder="Suchen: Name, Arbeitgeber, Bereich, Stadt, Notiz" aria-label="Einträge durchsuchen">
-      <select id="sort" aria-label="Sortierung"><option value="neu">Neueste zuerst</option><option value="alt">Älteste zuerst</option><option value="name">Name A–Z</option><option value="lohn-desc">Stundenlohn hoch → niedrig</option><option value="lohn-asc">Stundenlohn niedrig → hoch</option></select>
-      <label class="toggle"><input type="checkbox" id="only-cur"> nur aktuelle</label>
+    <div class="grid2">
+      <section class="card">
+        <div class="card-h"><h2>Rangliste</h2><span class="hint">Stundenlohn, aktuelle Stellen</span></div>
+        <div class="filters" id="rank-jfilter" aria-label="Nach Jobart filtern"></div>
+        <div class="filters" id="rank-filter" aria-label="Nach Tätigkeit filtern"></div>
+        <div class="rank" id="rank"></div>
+        <div class="rank-foot" id="rank-foot"></div>
+      </section>
+      <section class="card">
+        <div class="card-h"><h2>Gehaltsentwicklung</h2><label class="toggle"><input type="checkbox" id="t-milo"> Mindestlohn einblenden</label></div>
+        <div class="range-row" id="range-row" hidden><span class="label" style="min-width:0">Zeitraum</span><input type="range" id="r-from" min="0" max="0" step="1" value="0" aria-label="Zeitraum ab"><span id="r-from-l" class="num"></span><button class="fchip" type="button" id="r-all" hidden>Alles zeigen</button></div>
+        <div class="legend" id="legend"></div>
+        <div class="chart" id="trend"></div>
+      </section>
     </div>
-    <div class="tbl-wrap"><table id="tbl-all"></table></div>
-  </section>
+
+    <div class="grid2b">
+      <section class="card">
+        <div class="card-h"><h2>Steigerungen</h2><span class="hint">letzte Gehaltsänderung je Stelle</span></div>
+        <div class="tbl-wrap"><table id="tbl-up"></table></div>
+      </section>
+      <div class="stack">
+        <section class="card">
+          <div class="card-h"><h2>Nach Tätigkeit</h2><span class="hint">Median Stundenlohn, inkl. Nebenjobs</span></div>
+          <div class="rank" id="by-bereich"></div>
+        </section>
+        <section class="card">
+          <div class="card-h"><h2>Mehr Stunden = besserer Lohn?</h2><span class="hint">Hauptjobs</span></div>
+          <div class="chart" id="scatter"></div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabpanel" role="tabpanel" data-panel="eintraege" aria-labelledby="tab-eintraege" hidden>
+    <section class="card">
+      <div class="card-h"><h2>Alle Einträge</h2><span style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span class="hint" id="all-count">Bearbeiten nur bei eigenen Einträgen</span><button class="btn btn-ghost" type="button" id="btn-export" hidden>Als CSV exportieren</button></span></div>
+      <div class="tbl-tools">
+        <input type="search" id="q" placeholder="Suchen: Name, Arbeitgeber, Bereich, Stadt, Notiz" aria-label="Einträge durchsuchen">
+        <select id="sort" aria-label="Sortierung"><option value="neu">Neueste zuerst</option><option value="alt">Älteste zuerst</option><option value="name">Name A–Z</option><option value="lohn-desc">Stundenlohn hoch → niedrig</option><option value="lohn-asc">Stundenlohn niedrig → hoch</option></select>
+        <label class="toggle"><input type="checkbox" id="only-cur"> nur aktuelle</label>
+      </div>
+      <div class="tbl-wrap"><table id="tbl-all"></table></div>
+    </section>
+  </div>
+
+  <div class="tabpanel" role="tabpanel" data-panel="tarif" aria-labelledby="tab-tarif" hidden>
+    <div class="grid2b">
+    <section class="card">
+      <div class="card-h"><h2>Tarif Bau: Gehaltsgruppen</h2><span class="hint">Angestellte im Bauhauptgewerbe, gültig ab 01.04.2026</span></div>
+      <p class="tarif-note">Werkstudenten fallen nicht automatisch unter den Tarif, viele Baufirmen orientieren sich aber daran und zahlen den Stundenlohn der Gruppe anteilig. „Bei uns“ zeigt, wer in welcher Gruppe eingetragen ist.</p>
+      <div class="tbl-wrap"><table class="tarif-tbl" id="tbl-tarif"></table></div>
+      <p class="tarif-note">Quelle: <a href="https://tarifvertrag-online.de/entgelttabelle/bau/bauhauptgewerbe" target="_blank" rel="noopener">tarifvertrag-online.de, Gehaltstabelle Bauhauptgewerbe</a>. Gültig ab 01.04.2026, bundeseinheitlich, 40-Stunden-Woche, ohne 13. Monatseinkommen. Maßgeblich ist immer die Eingruppierung im eigenen Vertrag.</p>
+    </section>
+      <div class="stack">
+        <section class="card">
+          <div class="card-h"><h2>Mindestlohn</h2><span class="hint">gesetzlich, brutto pro Stunde</span></div>
+          <p class="muted" style="margin:0;font-size:14px" id="milo-sum"></p>
+          <div class="tbl-wrap"><table class="milo-tbl" id="milo-tbl"></table></div>
+        </section>
+      </div>
+    </div>
+  </div>
 </div>
 
 </div>
@@ -621,7 +644,7 @@ function renderTrend(L,persons){
   $("r-from-l").textContent=x0===fullX0?"gesamter Zeitraum":`ab ${mLabel(x0)}`;$("r-all").hidden=x0===fullX0;
   if(x1-x0<6)x0=x1-6;
   const inWin=allS.filter(s=>s.end>=x0&&s.xs<=x1&&!hidden.has(L.find(l=>l.items.includes(s.e)).pkey));
-  const vals=(inWin.length?inWin:allS).map(s=>s.e.stundenlohn).concat([miloAt(x0),miloAt(x1)].filter(Boolean));
+  const vals=(inWin.length?inWin:allS).map(s=>s.e.stundenlohn).concat(showMilo?[miloAt(x0),miloAt(x1)].filter(Boolean):[]);
   let y0=Math.floor(Math.min(...vals)-1),y1=Math.ceil(Math.max(...vals)+1);if(y1-y0<4){y0-=2;y1+=2}
   const W=640,H=280,Lm=44,R=16,T=14,B=30;
   const X=i=>Lm+(i-x0)/(x1-x0)*(W-Lm-R),Y=v=>T+(1-(v-y0)/(y1-y0))*(H-T-B);
@@ -631,10 +654,10 @@ function renderTrend(L,persons){
   const span=x1-x0,step=span>48?12:span>30?6:span>14?3:span>7?2:1;
   for(let i=Math.ceil(x0/step)*step;i<=x1;i+=step){g+=`<line x1="${X(i)}" x2="${X(i)}" y1="${H-B}" y2="${H-B+4}" stroke="var(--muted)"/><text x="${X(i)}" y="${H-B+17}" text-anchor="middle">${mLabel(i)}</text>`}
   g+=`<line x1="${Lm}" x2="${W-R}" y1="${H-B}" y2="${H-B}" stroke="var(--muted)"/>`;
-  if(nowIdx>=x0)g+=`<line x1="${X(nowIdx)}" x2="${X(nowIdx)}" y1="${T}" y2="${H-B}" stroke="var(--muted)" stroke-dasharray="3 3"/><text x="${X(nowIdx)-4}" y="${T+10}" text-anchor="end">heute</text>`;
+  if(nowIdx>=x0)g+=`<rect x="${X(nowIdx)}" y="${T}" width="${Math.max(0,W-R-X(nowIdx))}" height="${H-B-T}" fill="var(--grid)" opacity=".55"/><line x1="${X(nowIdx)}" x2="${X(nowIdx)}" y1="${T}" y2="${H-B}" stroke="var(--ink)" stroke-width="1" opacity=".55"/><text x="${X(nowIdx)+4}" y="${T+10}" style="fill:var(--ink)">heute</text>`;
   let lines="";
-  {let d="",prev=null;for(let i=x0;i<=x1;i++){const v=miloAt(i);if(v==null)continue;const y=Y(v);d+=prev==null?`M${X(i)},${y}`:(v!==prev?`L${X(i)},${Y(prev)}L${X(i)},${y}`:"");prev=v}
-   if(prev!=null){d+=`L${X(x1)},${Y(prev)}`;lines+=`<path d="${d}" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="2 3"/><text x="${W-R-2}" y="${Y(prev)+13}" text-anchor="end">Mindestlohn</text>`}}
+  if(showMilo){let d="",prev=null;for(let i=x0;i<=x1;i++){const v=miloAt(i);if(v==null)continue;const y=Y(v);d+=prev==null?`M${X(i)},${y}`:(v!==prev?`L${X(i)},${Y(prev)}L${X(i)},${y}`:"");prev=v}
+   if(prev!=null){d+=`L${X(x1)},${Y(prev)}`;lines+=`<path d="${d}" fill="none" stroke="var(--good)" stroke-width="2" stroke-dasharray="7 4"/><text x="${W-R-2}" y="${Y(prev)+14}" text-anchor="end" style="fill:var(--good);font-weight:600">Mindestlohn</text>`}}
   vis.filter(l=>!hidden.has(l.pkey)).sort((a,b)=>a.neben-b.neben).forEach(l=>{
     let d="",pts="",pen=false;
     segs.get(l.key).forEach(s=>{const y=Y(s.e.stundenlohn);
@@ -657,7 +680,7 @@ function renderUp(L){
   rows.map(l=>{const n=l.items.length>1,p=n?l.items[l.items.length-2]:null,d=lastStep(l),tot=l.last.stundenlohn/l.first.stundenlohn-1,fut=isFuture(l.last);
    return `<tr><td><span class="dot" style="background:${l.color}"></span>${esc(l.name)} <span class="tag ${l.neben?"neben":"job"}">${JOBS[l.job]}</span>${l.active||fut?"":` <span class="tag end">beendet</span>`}${fut?` <span class="tag plan">geplant</span>`:""}</td><td class="r num">${n?eur(p.stundenlohn):"–"}</td><td class="r num"><b>${eur(l.last.stundenlohn)}</b></td>
    <td class="r">${n&&d!==0?`<span class="delta num">${d>0?"+":""}${pct(d)}</span>`:`<span class="delta zero">–</span>`}</td>
-   <td class="muted num">${n?`${mLong(p.seit)} → ${mLong(l.last.seit)}${(()=>{const a=miloAt(mIdx(p.seit)),b=miloAt(mIdx(l.last.seit));return a&&b?`<br><span style="font-size:12px">Mindestlohn: ${b>a?"+"+pct(b/a-1):"unverändert"}</span>`:""})()}${l.items.length>2?`<br><span style="font-size:12px">insgesamt ${tot>=0?"+":""}${pct(tot)} seit ${mLong(l.first.seit)}</span>`:""}`:(fut?`ab ${mLong(l.last.seit)}`:`noch keine Änderung, seit ${mLong(l.cur.seit)}`)}</td></tr>`}).join("")+`</tbody>`;
+   <td class="muted num">${n?`${mLong(p.seit)} → ${mLong(l.last.seit)}${l.items.length>2?`<br><span style="font-size:12px">insgesamt ${tot>=0?"+":""}${pct(tot)} seit ${mLong(l.first.seit)}</span>`:""}`:(fut?`ab ${mLong(l.last.seit)}`:`noch keine Änderung, seit ${mLong(l.cur.seit)}`)}</td></tr>`}).join("")+`</tbody>`;
 }
 
 // Gesetzlicher Mindestlohn (brutto/h) ab Monat. Quelle: Mindestlohngesetz bzw. Beschlüsse der Mindestlohnkommission
@@ -686,24 +709,13 @@ function renderScatter(H){
 }
 
 // Tarif Bauhauptgewerbe, Angestellte, Monatsgehalt bei 40 h, gültig ab 01.04.2026 (bundeseinheitlich)
-const TARIF=[
- ["A I",2983,"Einfache Tätigkeiten mit kurzer Einarbeitung","keine Ausbildung nötig, z. B. Aushilfe"],
- ["A II",3400,"Abgegrenzte Aufgaben nach Anweisung","abgeschlossene Ausbildung, z. B. einfache Pläne"],
- ["A III",3862,"Abgegrenzte Aufgaben nach allgemeiner Anweisung","Ausbildung + Berufserfahrung, z. B. Schal- und Bewehrungspläne"],
- ["A IV",4339,"Erweiterte Aufgaben, teils selbstständig","Technikerschule oder Berufsakademie, z. B. Pläne anfertigen"],
- ["A V",4830,"Schwierige Aufgaben, teils eigenverantwortlich","Bachelor (Einstieg) oder Techniker + Erfahrung, z. B. Konstruktionen, Massen, einfache Kalkulation"],
- ["A VI",5340,"Schwierige Aufgaben, weitgehend selbstständig","Master FH, Diplom FH oder Bachelor + Erfahrung, z. B. Bauüberwachung unter einem Bauleiter, einfache Statik"],
- ["A VII",5878,"Schwierigere Aufgaben, eigenverantwortlich","Master/Diplom Uni oder Bachelor + vertiefte Erfahrung, Poliere, z. B. Abschnittsbauleitung, Statik mittlerer Schwierigkeit"],
- ["A VIII",6432,"Besonders schwierige Aufgaben, eigenverantwortlich","Master/Diplom + Erfahrung, z. B. selbstständige Bauleitung, Verhandeln mit Bauherren und Behörden"],
- ["A IX",7145,"Umfassende Aufgaben, eigenverantwortlich","Studium + vertiefte Berufserfahrung, z. B. Leitung komplizierter Bauausführungen"],
- ["A X",7961,"Umfassende Aufgaben mit besonderer Verantwortung","Studium + vertiefte Erfahrung, eigene Weisungsbefugnis (Führungsposition)"]
-];
+const TARIF=[["A I",2983],["A II",3400],["A III",3862],["A IV",4339],["A V",4830],["A VI",5340],["A VII",5878],["A VIII",6432],["A IX",7145],["A X",7961]];
 function renderTarif(L){
   const t=$("tbl-tarif"),act=L.filter(l=>l.active&&(showNeben||!l.neben)),byG=new Map();
   act.forEach(l=>{const g=l.cur.tarif;if(!g)return;if(!byG.has(g))byG.set(g,[]);byG.get(g).push(l)});
-  t.innerHTML=`<thead><tr><th>Gruppe</th><th>Typische Position</th><th class="r">Monat (40 h)</th><th class="r">€/h</th><th>Bei uns</th></tr></thead><tbody>`+
-  TARIF.map(([g,m,a,b])=>{const ls=byG.get(g)||[],h=m/(40*WPM);
-    return `<tr class="${ls.length?"has":""}"><td class="grp">${g}</td><td class="pos">${a}<small>${b}</small></td><td class="r num">${eur(m,0)}</td><td class="r num"><b>${eur(h)}</b></td><td><div class="who">${ls.map(l=>`<span class="tchip" title="${esc(eur(l.cur.stundenlohn))} pro Stunde, ${l.cur.stunden} h/Woche"><span class="dot" style="background:${l.color};margin-right:4px"></span>${esc(l.name)}</span>`).join("")}</div></td></tr>`}).join("")+`</tbody>`;
+  t.innerHTML=`<thead><tr><th>Gruppe</th><th class="r">Monat (40 h)</th><th class="r">€/h</th><th>Bei uns</th></tr></thead><tbody>`+
+  TARIF.map(([g,m])=>{const ls=byG.get(g)||[],h=m/(40*WPM);
+    return `<tr class="${ls.length?"has":""}"><td class="grp">${g}</td><td class="r num">${eur(m,0)}</td><td class="r num"><b>${eur(h)}</b></td><td><div class="who">${ls.map(l=>`<span class="tchip" title="${esc(eur(l.cur.stundenlohn))} pro Stunde, ${l.cur.stunden} h/Woche"><span class="dot" style="background:${l.color};margin-right:4px"></span>${esc(l.name)}</span>`).join("")}</div></td></tr>`}).join("")+`</tbody>`;
 }
 
 function renderAll(list,L){
@@ -779,6 +791,16 @@ $("seg-mode").addEventListener("click",e=>{const b=e.target.closest("button");if
 $("seg-abschluss").addEventListener("click",e=>{const b=e.target.closest("button");if(b){abschluss=abschluss===b.dataset.v?"":b.dataset.v;setSeg("seg-abschluss",abschluss)}});
 $("seg-art").addEventListener("click",e=>{const b=e.target.closest("button");if(b)setArt(b.dataset.v)});
 $("q").addEventListener("input",()=>render());$("sort").addEventListener("change",()=>render());$("only-cur").addEventListener("change",()=>render());
+let showMilo=false;try{showMilo=localStorage.getItem("gs-milo")==="1"}catch{}$("t-milo").checked=showMilo;
+$("t-milo").addEventListener("change",e=>{showMilo=e.target.checked;try{localStorage.setItem("gs-milo",showMilo?"1":"0")}catch{}render()});
+function showTab(t){if(!document.querySelector(`[data-panel="${t}"]`))t="uebersicht";
+  document.querySelectorAll("[data-tab]").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===t)));
+  document.querySelectorAll("[data-panel]").forEach(p=>p.hidden=p.dataset.panel!==t);
+  try{localStorage.setItem("gs-tab",t)}catch{}if(location.hash!=="#"+t)history.replaceState(null,"","#"+t)}
+document.querySelectorAll("[data-tab]").forEach(b=>b.addEventListener("click",()=>showTab(b.dataset.tab)));
+showTab((location.hash||"").slice(1)||(()=>{try{return localStorage.getItem("gs-tab")}catch{return null}})()||"uebersicht");
+const TARIF_RE=/(^|[\s(,;:])A\s?(VIII|VII|VI|IX|IV|V|X|III|II|I)(?![A-Za-zÄÖÜäöü])/;
+$("f-notiz").addEventListener("input",()=>{if($("f-tarif").value)return;const m=$("f-notiz").value.match(TARIF_RE);if(m)$("f-tarif").value="A "+m[2]});
 $("t-neben").addEventListener("change",e=>{showNeben=e.target.checked;render()});
 
 function lastName(){try{return localStorage.getItem("gs-name")||""}catch{return""}}
